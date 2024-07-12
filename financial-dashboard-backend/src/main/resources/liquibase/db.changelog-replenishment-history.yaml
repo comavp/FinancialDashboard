@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: comavp
+      changes:
+        - createTable:
+            tableName: replenishment_history
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: transaction_date
+                  type: DATE
+              - column:
+                  name: sum
+                  type: DOUBLE
+              - column:
+                  name: non_cash
+                  type: BOOLEAN
+              - column:
+                  name: type
+                  type: varchar(50)
+              - column:
+                  name: broker_name
+                  type: varchar(50)
