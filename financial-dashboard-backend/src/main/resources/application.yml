@@ -15,3 +15,8 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:liquibase/db.changelog-dashboard.yaml
+
+import:
+  sheet-name: "История"
+  replenishments-start-position: "История пополнений"
+  investments-start-position: "История покупок"

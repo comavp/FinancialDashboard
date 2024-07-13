@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "replenishment_history")
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 public class ReplenishmentHistory implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
     private LocalDate transactionDate;
