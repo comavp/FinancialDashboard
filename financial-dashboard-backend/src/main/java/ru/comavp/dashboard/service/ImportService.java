@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import ru.comavp.dashboard.config.ImportProperties;
-import ru.comavp.dashboard.model.InvestTransactions;
-import ru.comavp.dashboard.model.ReplenishmentHistory;
+import ru.comavp.dashboard.model.InvestTransaction;
+import ru.comavp.dashboard.model.ReplenishmentTransaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class ImportService {
         return 0;
     }
 
-    private List<ReplenishmentHistory> extractReplenishmentTransactions(Sheet currentSheet, int startPosition) {
+    private List<ReplenishmentTransaction> extractReplenishmentTransactions(Sheet currentSheet, int startPosition) {
         var rowIterator = currentSheet.rowIterator();
         int rowsToSkip = 2;
 
@@ -46,7 +46,7 @@ public class ImportService {
             rowsToSkip--;
         }
 
-        List<ReplenishmentHistory> resultList = new ArrayList<>();
+        List<ReplenishmentTransaction> resultList = new ArrayList<>();
 
         while(rowIterator.hasNext()) {
             var currentRow = rowIterator.next();
@@ -67,7 +67,7 @@ public class ImportService {
         return row.getFirstCellNum() != 6 && row.getFirstCellNum() != 0;
     }
 
-    private ReplenishmentHistory extractReplenishmentTransactionsFromRow(Row currentRow, int startPosition) {
+    private ReplenishmentTransaction extractReplenishmentTransactionsFromRow(Row currentRow, int startPosition) {
         var cellIterator = currentRow.cellIterator();
         List<Cell> cellsList = new ArrayList<>();
 
@@ -87,8 +87,8 @@ public class ImportService {
         return mapCellsToReplenishmentTransaction(cellsList);
     }
 
-    private ReplenishmentHistory mapCellsToReplenishmentTransaction(List<Cell> cellsList) {
-        var entity = new ReplenishmentHistory();
+    private ReplenishmentTransaction mapCellsToReplenishmentTransaction(List<Cell> cellsList) {
+        var entity = new ReplenishmentTransaction();
         entity.setTransactionDate(cellsList.get(0).getLocalDateTimeCellValue().toLocalDate());
         switch (cellsList.get(1).getCellType()) {
             case STRING -> entity.setSum(Double.valueOf(cellsList.get(1).getStringCellValue()));
@@ -105,7 +105,7 @@ public class ImportService {
         return entity;
     }
 
-    private List<InvestTransactions> extractInvestTransactions(Sheet currentSheet, int startPosition) {
+    private List<InvestTransaction> extractInvestTransactions(Sheet currentSheet, int startPosition) {
         var rowIterator = currentSheet.rowIterator();
         int rowsToSkip = 2;
 
@@ -114,7 +114,7 @@ public class ImportService {
             rowsToSkip--;
         }
 
-        List<InvestTransactions> resultList = new ArrayList<>();
+        List<InvestTransaction> resultList = new ArrayList<>();
 
         while(rowIterator.hasNext()) {
             var currentRow = rowIterator.next();
@@ -125,7 +125,7 @@ public class ImportService {
         return resultList;
     }
 
-    private InvestTransactions extractInvestTransactionsFromRow(Row currentRow, int startPosition) {
+    private InvestTransaction extractInvestTransactionsFromRow(Row currentRow, int startPosition) {
         var cellIterator = currentRow.cellIterator();
         List<Cell> cellsList = new ArrayList<>();
 
@@ -145,8 +145,8 @@ public class ImportService {
         return mapCellsToInvestTransaction(cellsList);
     }
 
-    private InvestTransactions mapCellsToInvestTransaction(List<Cell> cellsList) {
-        var entity = new InvestTransactions();
+    private InvestTransaction mapCellsToInvestTransaction(List<Cell> cellsList) {
+        var entity = new InvestTransaction();
         int ind = 0;
         entity.setTransactionDate(cellsList.get(ind).getLocalDateTimeCellValue().toLocalDate());
         try {
