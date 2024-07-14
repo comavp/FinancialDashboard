@@ -5,10 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.comavp.dashboard.dto.InvestTransactionDto;
-import ru.comavp.dashboard.dto.InvestTransactionsFilter;
-import ru.comavp.dashboard.dto.ReplenishmentTransactionDto;
-import ru.comavp.dashboard.dto.ReplenishmentsFilter;
+import ru.comavp.dashboard.dto.*;
 import ru.comavp.dashboard.service.ImportService;
 import ru.comavp.dashboard.service.InvestTransactionsService;
 import ru.comavp.dashboard.service.ReplenishmentHistoryService;
@@ -49,5 +46,10 @@ public class MainController {
     @PostMapping("/invest-transactions/filter")
     public ResponseEntity<Iterable<InvestTransactionDto>> findInvestTransactionsByFilter(@RequestBody InvestTransactionsFilter filter) {
         return ResponseEntity.ok(investTransactionsService.findByFilter(filter));
+    }
+
+    @GetMapping("invest-transactions/portfolio")
+    public ResponseEntity<Iterable<InvestmentPortfolioInfoDto>> getInvestmentPortfolioInfo() {
+        return ResponseEntity.ok(investTransactionsService.getInvestmentPortfolioInfo());
     }
 }

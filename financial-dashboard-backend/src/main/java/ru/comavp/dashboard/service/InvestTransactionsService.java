@@ -4,11 +4,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.comavp.dashboard.dto.InvestTransactionDto;
 import ru.comavp.dashboard.dto.InvestTransactionsFilter;
+import ru.comavp.dashboard.dto.InvestmentPortfolioInfoDto;
 import ru.comavp.dashboard.model.InvestTransaction;
+import ru.comavp.dashboard.model.InvestmentPortfolioInfo;
 import ru.comavp.dashboard.repository.InvestTransactionsRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -43,6 +46,10 @@ public class InvestTransactionsService {
                 .toList();
     }
 
+    public List<InvestmentPortfolioInfoDto> getInvestmentPortfolioInfo() {
+        return mapToDto(investTransactionsRepository.getInvestmentPortfolioInfo());
+    }
+
     private List<InvestTransactionDto> findByBrokerName(String brokerName) {
         return investTransactionsRepository.findByBrokerName(brokerName)
                 .stream()
@@ -69,5 +76,23 @@ public class InvestTransactionsService {
                 .operationType(entity.getOperationType())
                 .brokerName(entity.getBrokerName())
                 .build();
+    }
+
+    private List<InvestmentPortfolioInfoDto> mapToDto(List<InvestmentPortfolioInfo> entityList) {
+        return entityList.stream()
+                .collect(Collectors.groupingBy(InvestmentPortfolioInfo::getIssuerName))
+                .entrySet()
+                .stream()
+                .map(entry -> InvestmentPortfolioInfoDto.builder()
+                        .issueName(entry.getKey())
+                        .brokerNameToQuantityMap(entry.getValue()
+                                .stream()
+                                .filter(item -> item.getBrokerName() != null && item.getQuantity() != null)
+                                .collect(Collectors.toMap(
+                                        InvestmentPortfolioInfo::getBrokerName,
+                                        InvestmentPortfolioInfo::getQuantity
+                                )))
+                        .build())
+                .toList();
     }
 }
