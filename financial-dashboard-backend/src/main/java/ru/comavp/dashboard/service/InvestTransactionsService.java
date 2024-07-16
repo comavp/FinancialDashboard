@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.comavp.dashboard.dto.InvestTransactionDto;
 import ru.comavp.dashboard.dto.InvestTransactionsFilter;
 import ru.comavp.dashboard.dto.InvestmentPortfolioInfoDto;
+import ru.comavp.dashboard.mappers.InvestTransactionMapper;
 import ru.comavp.dashboard.model.InvestTransaction;
 import ru.comavp.dashboard.model.InvestmentPortfolioInfo;
 import ru.comavp.dashboard.repository.InvestTransactionsRepository;
@@ -18,16 +19,14 @@ import java.util.stream.Collectors;
 public class InvestTransactionsService {
 
     private InvestTransactionsRepository investTransactionsRepository;
+    private InvestTransactionMapper mapper;
 
     public void saveAllTransactions(List<InvestTransaction> transactionList) {
         investTransactionsRepository.saveAll(transactionList);
     }
 
     public List<InvestTransactionDto> findAll() {
-        return investTransactionsRepository.findAll()
-                .stream()
-                .map(this::mapToDto)
-                .toList();
+        return mapper.mapToDtoList(investTransactionsRepository.findAll());
     }
 
     public List<InvestTransactionDto> findByFilter(InvestTransactionsFilter filter) {
@@ -39,11 +38,8 @@ public class InvestTransactionsService {
             return findAfterDate(LocalDate.of(filter.getYear(), 1, 1));
         }
 
-        return investTransactionsRepository.findByBrokerNameAndTransactionDateAfter(filter.getBrokerName(),
-                        LocalDate.of(filter.getYear(), 1, 1))
-                .stream()
-                .map(this::mapToDto)
-                .toList();
+        return mapper.mapToDtoList(investTransactionsRepository.findByBrokerNameAndTransactionDateAfter(
+                filter.getBrokerName(), LocalDate.of(filter.getYear(), 1, 1)));
     }
 
     public List<InvestmentPortfolioInfoDto> getInvestmentPortfolioInfo() {
@@ -51,31 +47,11 @@ public class InvestTransactionsService {
     }
 
     private List<InvestTransactionDto> findByBrokerName(String brokerName) {
-        return investTransactionsRepository.findByBrokerName(brokerName)
-                .stream()
-                .map(this::mapToDto)
-                .toList();
+        return mapper.mapToDtoList(investTransactionsRepository.findByBrokerName(brokerName));
     }
 
     private List<InvestTransactionDto> findAfterDate(LocalDate date) {
-        return investTransactionsRepository.findByTransactionDateAfter(date)
-                .stream()
-                .map(this::mapToDto)
-                .toList();
-    }
-    
-    private InvestTransactionDto mapToDto(InvestTransaction entity) {
-        return InvestTransactionDto.builder()
-                .transactionDate(entity.getTransactionDate())
-                .issuerName(entity.getIssuerName())
-                .quantity(entity.getQuantity())
-                .price(entity.getPrice())
-                .totalSum(entity.getTotalSum())
-                .commission(entity.getCommission())
-                .tax(entity.getTax())
-                .operationType(entity.getOperationType())
-                .brokerName(entity.getBrokerName())
-                .build();
+        return mapper.mapToDtoList(investTransactionsRepository.findByTransactionDateAfter(date));
     }
 
     private List<InvestmentPortfolioInfoDto> mapToDto(List<InvestmentPortfolioInfo> entityList) {
