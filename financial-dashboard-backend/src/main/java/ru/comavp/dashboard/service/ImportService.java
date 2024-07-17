@@ -18,13 +18,25 @@ public class ImportService {
     private ReplenishmentHistoryService replenishmentHistoryService;
     private ImportProperties importProperties;
 
-    public void importInvestTransactions(Workbook workbook) {
+    public void importAllDataFromWorkBookSheet(Workbook workbook) {
         var currentSheet = workbook.getSheet(importProperties.getSheetName());
         int replenishmentStartColumn = findStartPosition(currentSheet, importProperties.getReplenishmentsStartPosition());
         int investmentsStarColumn = findStartPosition(currentSheet, importProperties.getInvestmentsStartPosition());
 
         replenishmentHistoryService.saveAllTransactions(extractReplenishmentTransactions(currentSheet, replenishmentStartColumn));
         investTransactionsService.saveAllTransactions(extractInvestTransactions(currentSheet, investmentsStarColumn));
+    }
+
+    public void importInvestTransactions(Workbook workbook) {
+        var currentSheet = workbook.getSheet(importProperties.getSheetName());
+        int investmentsStarColumn = findStartPosition(currentSheet, importProperties.getInvestmentsStartPosition());
+        investTransactionsService.saveAllTransactions(extractInvestTransactions(currentSheet, investmentsStarColumn));
+    }
+
+    public void importReplenishmentTransactions(Workbook workbook) {
+        var currentSheet = workbook.getSheet(importProperties.getSheetName());
+        int replenishmentStartColumn = findStartPosition(currentSheet, importProperties.getReplenishmentsStartPosition());
+        replenishmentHistoryService.saveAllTransactions(extractReplenishmentTransactions(currentSheet, replenishmentStartColumn));
     }
 
     private int findStartPosition(Sheet currentSheet, String startPosition) {
