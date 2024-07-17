@@ -22,8 +22,7 @@ public class ImportServiceTest {
     }
 
     private Workbook readFileToImport() throws IOException {
-        //FileInputStream file = new FileInputStream("test_file.xlsx"); // todo add relative filePath
-        FileInputStream file = new FileInputStream("D:\\JavaProjects\\FinancialDashboard\\financial-dashboard-backend\\src\\test\\resources\\test_file.xlsx");
+        FileInputStream file = new FileInputStream("src\\test\\resources\\test_file.xlsx");
         return new XSSFWorkbook(file);
     }
 }
