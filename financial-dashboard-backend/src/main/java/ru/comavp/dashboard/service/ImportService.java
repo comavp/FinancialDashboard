@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import ru.comavp.dashboard.config.ImportProperties;
-import ru.comavp.dashboard.model.InvestTransaction;
-import ru.comavp.dashboard.model.ReplenishmentTransaction;
+import ru.comavp.dashboard.model.entity.InvestTransaction;
+import ru.comavp.dashboard.model.entity.ReplenishmentTransaction;
 
 import java.util.ArrayList;
 import java.util.List;

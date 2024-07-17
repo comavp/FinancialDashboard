@@ -1,4 +1,4 @@
-package ru.comavp.dashboard.model;
+package ru.comavp.dashboard.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

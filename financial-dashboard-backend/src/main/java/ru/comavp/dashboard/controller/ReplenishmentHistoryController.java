@@ -3,8 +3,8 @@ package ru.comavp.dashboard.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.comavp.dashboard.dto.ReplenishmentTransactionDto;
-import ru.comavp.dashboard.dto.ReplenishmentsFilter;
+import ru.comavp.dashboard.model.dto.ReplenishmentTransactionDto;
+import ru.comavp.dashboard.model.dto.ReplenishmentsFilter;
 import ru.comavp.dashboard.service.ReplenishmentHistoryService;
 
 @RestController

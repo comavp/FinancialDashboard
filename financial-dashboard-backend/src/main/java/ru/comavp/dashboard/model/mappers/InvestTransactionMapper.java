@@ -1,8 +1,8 @@
-package ru.comavp.dashboard.mappers;
+package ru.comavp.dashboard.model.mappers;
 
 import org.mapstruct.Mapper;
-import ru.comavp.dashboard.dto.InvestTransactionDto;
-import ru.comavp.dashboard.model.InvestTransaction;
+import ru.comavp.dashboard.model.dto.InvestTransactionDto;
+import ru.comavp.dashboard.model.entity.InvestTransaction;
 
 import java.util.List;
 

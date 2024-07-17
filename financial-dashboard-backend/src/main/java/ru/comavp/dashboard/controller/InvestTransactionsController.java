@@ -3,9 +3,9 @@ package ru.comavp.dashboard.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.comavp.dashboard.dto.InvestTransactionDto;
-import ru.comavp.dashboard.dto.InvestTransactionsFilter;
-import ru.comavp.dashboard.dto.InvestmentPortfolioInfoDto;
+import ru.comavp.dashboard.model.dto.InvestTransactionDto;
+import ru.comavp.dashboard.model.dto.InvestTransactionsFilter;
+import ru.comavp.dashboard.model.dto.InvestmentPortfolioInfoDto;
 import ru.comavp.dashboard.service.InvestTransactionsService;
 
 @RestController

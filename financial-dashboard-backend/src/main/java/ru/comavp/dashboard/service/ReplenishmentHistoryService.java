@@ -2,10 +2,10 @@ package ru.comavp.dashboard.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.comavp.dashboard.dto.ReplenishmentTransactionDto;
-import ru.comavp.dashboard.dto.ReplenishmentsFilter;
-import ru.comavp.dashboard.mappers.ReplenishmentMapper;
-import ru.comavp.dashboard.model.ReplenishmentTransaction;
+import ru.comavp.dashboard.model.dto.ReplenishmentTransactionDto;
+import ru.comavp.dashboard.model.dto.ReplenishmentsFilter;
+import ru.comavp.dashboard.model.mappers.ReplenishmentMapper;
+import ru.comavp.dashboard.model.entity.ReplenishmentTransaction;
 import ru.comavp.dashboard.repository.ReplenishmentHistoryRepository;
 
 import java.time.LocalDate;

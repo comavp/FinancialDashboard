@@ -2,12 +2,12 @@ package ru.comavp.dashboard.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.comavp.dashboard.dto.InvestTransactionDto;
-import ru.comavp.dashboard.dto.InvestTransactionsFilter;
-import ru.comavp.dashboard.dto.InvestmentPortfolioInfoDto;
-import ru.comavp.dashboard.mappers.InvestTransactionMapper;
-import ru.comavp.dashboard.model.InvestTransaction;
-import ru.comavp.dashboard.model.InvestmentPortfolioInfo;
+import ru.comavp.dashboard.model.dto.InvestTransactionDto;
+import ru.comavp.dashboard.model.dto.InvestTransactionsFilter;
+import ru.comavp.dashboard.model.dto.InvestmentPortfolioInfoDto;
+import ru.comavp.dashboard.model.mappers.InvestTransactionMapper;
+import ru.comavp.dashboard.model.entity.InvestTransaction;
+import ru.comavp.dashboard.model.entity.InvestmentPortfolioInfo;
 import ru.comavp.dashboard.repository.InvestTransactionsRepository;
 
 import java.time.LocalDate;

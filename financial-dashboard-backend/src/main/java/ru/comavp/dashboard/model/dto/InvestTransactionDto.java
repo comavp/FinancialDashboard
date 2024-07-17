@@ -1,4 +1,4 @@
-package ru.comavp.dashboard.dto;
+package ru.comavp.dashboard.model.dto;
 
 import jakarta.persistence.Column;
 import lombok.Builder;

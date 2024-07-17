@@ -1,8 +1,8 @@
-package ru.comavp.dashboard.mappers;
+package ru.comavp.dashboard.model.mappers;
 
 import org.mapstruct.Mapper;
-import ru.comavp.dashboard.dto.ReplenishmentTransactionDto;
-import ru.comavp.dashboard.model.ReplenishmentTransaction;
+import ru.comavp.dashboard.model.dto.ReplenishmentTransactionDto;
+import ru.comavp.dashboard.model.entity.ReplenishmentTransaction;
 
 import java.util.List;
 
