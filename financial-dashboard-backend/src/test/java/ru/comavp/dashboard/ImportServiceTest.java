@@ -17,7 +17,7 @@ public class ImportServiceTest {
     ImportService importService;
 
     @Test
-    public void testImportInvestTransactions() throws IOException {
+    public void testImportAllDataFromWorkBookSheet() throws IOException {
         importService.importAllDataFromWorkBookSheet(readFileToImport());
     }
 
