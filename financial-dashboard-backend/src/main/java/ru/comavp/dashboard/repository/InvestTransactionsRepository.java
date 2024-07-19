@@ -11,8 +11,8 @@ import java.util.List;
 public interface InvestTransactionsRepository extends JpaRepository<InvestTransaction, Long> {
 
     List<InvestTransaction> findByBrokerName(String brokerName);
-    List<InvestTransaction> findByTransactionDateAfter(LocalDate date);
-    List<InvestTransaction> findByBrokerNameAndTransactionDateAfter(String brokerName, LocalDate date);
+    List<InvestTransaction> findByTransactionDateGreaterThanEqual(LocalDate date);
+    List<InvestTransaction> findByBrokerNameAndTransactionDateGreaterThanEqual(String brokerName, LocalDate date);
     @Query("SELECT new ru.comavp.dashboard.model.entity.InvestmentPortfolioInfo(it.issuerName, it.brokerName, SUM(it.quantity)) " +
             "FROM InvestTransaction AS it GROUP BY it.issuerName, it.brokerName")
     List<InvestmentPortfolioInfo> getInvestmentPortfolioInfo();

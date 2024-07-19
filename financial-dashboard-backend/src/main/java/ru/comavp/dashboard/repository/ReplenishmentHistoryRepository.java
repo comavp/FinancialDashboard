@@ -9,6 +9,6 @@ import java.util.List;
 public interface ReplenishmentHistoryRepository extends JpaRepository<ReplenishmentTransaction, Long> {
 
     List<ReplenishmentTransaction> findByBrokerName(String brokerName);
-    List<ReplenishmentTransaction> findByTransactionDateAfter(LocalDate date);
-    List<ReplenishmentTransaction> findByBrokerNameAndTransactionDateAfter(String brokerName, LocalDate date);
+    List<ReplenishmentTransaction> findByTransactionDateGreaterThanEqual(LocalDate date);
+    List<ReplenishmentTransaction> findByBrokerNameAndTransactionDateGreaterThanEqual(String brokerName, LocalDate date);
 }

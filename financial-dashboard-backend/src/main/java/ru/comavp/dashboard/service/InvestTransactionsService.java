@@ -38,7 +38,7 @@ public class InvestTransactionsService {
             return findAfterDate(LocalDate.of(filter.getYear(), 1, 1));
         }
 
-        return mapper.mapToDtoList(investTransactionsRepository.findByBrokerNameAndTransactionDateAfter(
+        return mapper.mapToDtoList(investTransactionsRepository.findByBrokerNameAndTransactionDateGreaterThanEqual(
                 filter.getBrokerName(), LocalDate.of(filter.getYear(), 1, 1)));
     }
 
@@ -51,7 +51,7 @@ public class InvestTransactionsService {
     }
 
     private List<InvestTransactionDto> findAfterDate(LocalDate date) {
-        return mapper.mapToDtoList(investTransactionsRepository.findByTransactionDateAfter(date));
+        return mapper.mapToDtoList(investTransactionsRepository.findByTransactionDateGreaterThanEqual(date));
     }
 
     private List<InvestmentPortfolioInfoDto> mapToDto(List<InvestmentPortfolioInfo> entityList) {

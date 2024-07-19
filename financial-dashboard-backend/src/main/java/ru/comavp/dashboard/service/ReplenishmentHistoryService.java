@@ -35,7 +35,7 @@ public class ReplenishmentHistoryService {
             return findAfterDate(LocalDate.of(filter.getYear(), 1, 1));
         }
 
-        return mapper.toDtoList(replenishmentHistoryRepository.findByBrokerNameAndTransactionDateAfter(
+        return mapper.toDtoList(replenishmentHistoryRepository.findByBrokerNameAndTransactionDateGreaterThanEqual(
                 filter.getBrokerName(), LocalDate.of(filter.getYear(), 1, 1)));
     }
 
@@ -44,6 +44,6 @@ public class ReplenishmentHistoryService {
     }
 
     private List<ReplenishmentTransactionDto> findAfterDate(LocalDate date) {
-        return mapper.toDtoList(replenishmentHistoryRepository.findByTransactionDateAfter(date));
+        return mapper.toDtoList(replenishmentHistoryRepository.findByTransactionDateGreaterThanEqual(date));
     }
 }
