@@ -1,9 +1,7 @@
 package ru.comavp.dashboard.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -11,8 +9,10 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "invest_transactions")
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class InvestTransaction implements Serializable {
 
     @Id
