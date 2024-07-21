@@ -29,10 +29,10 @@ class InvestTransactionsServiceTest {
     @Mock
     private InvestTransactionsRepository repository;
     @Spy
-    InvestTransactionMapper mapper = Mappers.getMapper(InvestTransactionMapper.class);
+    private InvestTransactionMapper mapper = Mappers.getMapper(InvestTransactionMapper.class);
 
     @InjectMocks
-    InvestTransactionsService investTransactionsService;
+    private InvestTransactionsService investTransactionsService;
 
     @Test
     public void testSaveAllTransactions() {
