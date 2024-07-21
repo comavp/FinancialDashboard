@@ -9,6 +9,6 @@ import java.util.Map;
 @Builder
 public class InvestmentPortfolioInfoDto {
 
-    private String issueName;
+    private String issuerName;
     private Map<String, Long> brokerNameToQuantityMap;
 }

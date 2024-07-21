@@ -60,7 +60,7 @@ public class InvestTransactionsService {
                 .entrySet()
                 .stream()
                 .map(entry -> InvestmentPortfolioInfoDto.builder()
-                        .issueName(entry.getKey())
+                        .issuerName(entry.getKey())
                         .brokerNameToQuantityMap(entry.getValue()
                                 .stream()
                                 .filter(item -> item.getBrokerName() != null && item.getQuantity() != null)
