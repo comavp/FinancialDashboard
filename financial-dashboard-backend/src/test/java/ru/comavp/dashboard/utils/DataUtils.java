@@ -13,7 +13,7 @@ import java.util.Map;
 @UtilityClass
 public class DataUtils {
 
-    public String FILE_PATH = "\\src\\test\\resources\\test_file.xlsx";
+    public String FILE_PATH = "src\\test\\resources\\test_file.xlsx";
 
     public InvestTransaction generateInvestTransaction(String issuerName, LocalDate transactionDate, String brokerName) {
         return InvestTransaction.builder()
