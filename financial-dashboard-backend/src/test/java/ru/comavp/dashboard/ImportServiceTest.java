@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.comavp.dashboard.service.ImportService;
+import ru.comavp.dashboard.utils.DataUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class ImportServiceTest {
     }
 
     private Workbook readFileToImport() throws IOException {
-        FileInputStream file = new FileInputStream("src\\test\\resources\\test_file.xlsx");
+        FileInputStream file = new FileInputStream(DataUtils.FILE_PATH);
         return new XSSFWorkbook(file);
     }
 }
