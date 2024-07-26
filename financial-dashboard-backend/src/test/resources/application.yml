@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:dashboard_db
+    username: user
+    password: 123
+    driver-class-name: org.h2.Driver
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        ddl-auto: update
+        dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console.enabled: true
+  liquibase:
+    enabled: false
+
+import:
+  sheet-name: "История"
+  replenishments-start-position: "История пополнений"
+  investments-start-position: "История покупок"
