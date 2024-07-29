@@ -1,4 +1,4 @@
-package ru.comavp.dashboard;
+package ru.comavp.dashboard.config;
 
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;

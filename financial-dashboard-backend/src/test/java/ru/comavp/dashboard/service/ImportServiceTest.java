@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.comavp.dashboard.ClearInMemoryDbExtension;
+import ru.comavp.dashboard.config.ClearInMemoryDbExtension;
 import ru.comavp.dashboard.utils.DataUtils;
 
 import java.io.FileInputStream;
