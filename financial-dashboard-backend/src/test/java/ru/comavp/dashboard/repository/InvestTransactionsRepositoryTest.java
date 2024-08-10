@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class InvestTransactionsRepositoryTest {
 
     @Autowired
-    InvestTransactionsRepository repository;
+    private InvestTransactionsRepository repository;
     @Autowired
-    TestEntityManager entityManager;
+    private TestEntityManager entityManager;
 
     @BeforeEach
     public void init() {

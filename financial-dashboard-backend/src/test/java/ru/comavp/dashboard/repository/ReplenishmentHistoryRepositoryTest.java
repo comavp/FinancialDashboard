@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReplenishmentHistoryRepositoryTest {
 
     @Autowired
-    ReplenishmentHistoryRepository repository;
+    private ReplenishmentHistoryRepository repository;
     @Autowired
-    TestEntityManager entityManager;
+    private TestEntityManager entityManager;
 
     @BeforeEach
     public void init() {
