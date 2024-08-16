@@ -9,6 +9,7 @@ import ru.comavp.dashboard.model.entity.ReplenishmentTransaction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @AllArgsConstructor
@@ -23,20 +24,40 @@ public class ImportService {
         int replenishmentStartColumn = findStartPosition(currentSheet, importProperties.getReplenishmentsStartPosition());
         int investmentsStarColumn = findStartPosition(currentSheet, importProperties.getInvestmentsStartPosition());
 
-        replenishmentHistoryService.saveAllTransactions(extractReplenishmentTransactions(currentSheet, replenishmentStartColumn));
-        investTransactionsService.saveAllTransactions(extractInvestTransactions(currentSheet, investmentsStarColumn));
+        CompletableFuture.allOf(
+                extractReplenishmentTransactions(currentSheet, replenishmentStartColumn)
+                        .thenCompose(transactionsList -> {
+                            replenishmentHistoryService.saveAllTransactions(transactionsList);
+                            return CompletableFuture.completedFuture(null);
+                        }),
+                extractInvestTransactions(currentSheet, investmentsStarColumn)
+                        .thenCompose(transactionsList -> {
+                            investTransactionsService.saveAllTransactions(transactionsList);
+                            return CompletableFuture.completedFuture(null);
+                        })
+        ).join();
     }
 
     public void importInvestTransactions(Workbook workbook) {
         var currentSheet = workbook.getSheet(importProperties.getSheetName());
         int investmentsStarColumn = findStartPosition(currentSheet, importProperties.getInvestmentsStartPosition());
-        investTransactionsService.saveAllTransactions(extractInvestTransactions(currentSheet, investmentsStarColumn));
+        extractInvestTransactions(currentSheet, investmentsStarColumn)
+                .thenCompose(transactionsList -> {
+                    investTransactionsService.saveAllTransactions(transactionsList);
+                    return CompletableFuture.completedFuture(null);
+                })
+                .join();
     }
 
     public void importReplenishmentTransactions(Workbook workbook) {
         var currentSheet = workbook.getSheet(importProperties.getSheetName());
         int replenishmentStartColumn = findStartPosition(currentSheet, importProperties.getReplenishmentsStartPosition());
-        replenishmentHistoryService.saveAllTransactions(extractReplenishmentTransactions(currentSheet, replenishmentStartColumn));
+        extractReplenishmentTransactions(currentSheet, replenishmentStartColumn)
+                .thenCompose(transactionsList -> {
+                    replenishmentHistoryService.saveAllTransactions(transactionsList);
+                    return CompletableFuture.completedFuture(null);
+                })
+                .join();
     }
 
     private int findStartPosition(Sheet currentSheet, String startPosition) {
@@ -49,26 +70,28 @@ public class ImportService {
         return 0;
     }
 
-    private List<ReplenishmentTransaction> extractReplenishmentTransactions(Sheet currentSheet, int startPosition) {
-        var rowIterator = currentSheet.rowIterator();
-        int rowsToSkip = 2;
+    private CompletableFuture<List<ReplenishmentTransaction>> extractReplenishmentTransactions(Sheet currentSheet, int startPosition) {
+        return CompletableFuture.supplyAsync(() -> {
+            var rowIterator = currentSheet.rowIterator();
+            int rowsToSkip = 2;
 
-        while(rowIterator.hasNext() && rowsToSkip > 0) {
-            rowIterator.next();
-            rowsToSkip--;
-        }
-
-        List<ReplenishmentTransaction> resultList = new ArrayList<>();
-
-        while(rowIterator.hasNext()) {
-            var currentRow = rowIterator.next();
-            if (isEndOfReplenishmentTransactions(currentRow)) {
-                break;
+            while(rowIterator.hasNext() && rowsToSkip > 0) {
+                rowIterator.next();
+                rowsToSkip--;
             }
-            resultList.add(extractReplenishmentTransactionsFromRow(currentRow, startPosition));
-        }
 
-        return resultList;
+            List<ReplenishmentTransaction> resultList = new ArrayList<>();
+
+            while(rowIterator.hasNext()) {
+                var currentRow = rowIterator.next();
+                if (isEndOfReplenishmentTransactions(currentRow)) {
+                    break;
+                }
+                resultList.add(extractReplenishmentTransactionsFromRow(currentRow, startPosition));
+            }
+
+            return resultList;
+        });
     }
 
     private boolean isEndOfReplenishmentTransactions(Row row) {
@@ -117,24 +140,26 @@ public class ImportService {
         return entity;
     }
 
-    private List<InvestTransaction> extractInvestTransactions(Sheet currentSheet, int startPosition) {
-        var rowIterator = currentSheet.rowIterator();
-        int rowsToSkip = 2;
+    private CompletableFuture<List<InvestTransaction>> extractInvestTransactions(Sheet currentSheet, int startPosition) {
+        return CompletableFuture.supplyAsync(() -> {
+            var rowIterator = currentSheet.rowIterator();
+            int rowsToSkip = 2;
 
-        while(rowIterator.hasNext() && rowsToSkip > 0) {
-            rowIterator.next();
-            rowsToSkip--;
-        }
+            while(rowIterator.hasNext() && rowsToSkip > 0) {
+                rowIterator.next();
+                rowsToSkip--;
+            }
 
-        List<InvestTransaction> resultList = new ArrayList<>();
+            List<InvestTransaction> resultList = new ArrayList<>();
 
-        while(rowIterator.hasNext()) {
-            var currentRow = rowIterator.next();
-            if (isEndOfInvestmentsTransactions(currentRow)) break;
-            resultList.add(extractInvestTransactionsFromRow(currentRow, startPosition));
-        }
+            while(rowIterator.hasNext()) {
+                var currentRow = rowIterator.next();
+                if (isEndOfInvestmentsTransactions(currentRow)) break;
+                resultList.add(extractInvestTransactionsFromRow(currentRow, startPosition));
+            }
 
-        return resultList;
+            return resultList;
+        });
     }
 
     private InvestTransaction extractInvestTransactionsFromRow(Row currentRow, int startPosition) {
