@@ -3,7 +3,6 @@ package ru.comavp.dashboard.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
@@ -13,7 +12,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-public class InvestTransaction implements Serializable {
+public class InvestTransaction extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

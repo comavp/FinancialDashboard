@@ -28,3 +28,9 @@ databaseChangeLog:
               - column:
                   name: broker_name
                   type: varchar(50)
+              - column:
+                  name: created_date
+                  type: DATE
+              - column:
+                  name: modified_date
+                  type: DATE
