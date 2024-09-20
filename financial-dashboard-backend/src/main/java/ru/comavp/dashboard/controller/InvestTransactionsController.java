@@ -11,6 +11,7 @@ import ru.comavp.dashboard.service.InvestTransactionsService;
 @RestController
 @RequestMapping("/api/invest-transactions")
 @AllArgsConstructor
+@CrossOrigin
 public class InvestTransactionsController {
 
     private InvestTransactionsService investTransactionsService;

@@ -10,6 +10,7 @@ import ru.comavp.dashboard.service.ReplenishmentHistoryService;
 @RestController
 @RequestMapping("/api/replenishment-transactions")
 @AllArgsConstructor
+@CrossOrigin
 public class ReplenishmentHistoryController {
 
     private ReplenishmentHistoryService replenishmentService;
