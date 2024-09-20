@@ -1,6 +1,6 @@
 <template>
   <div class="navbar">
-    <button @click="$router.push('/')">Портфель</button>
+    <button @click="$router.push('/investments-portfolio')">Портфель</button>
     <button @click="$router.push('/invest-transactions')">
       История покупок
     </button>
