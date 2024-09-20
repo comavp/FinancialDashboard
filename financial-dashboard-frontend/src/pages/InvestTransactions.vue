@@ -43,7 +43,6 @@ export default {
   methods: {
     async fetchTransactions() {
       try {
-        console.log("Hello");
         const response = await axios.get(
           "http://localhost:8081/api/invest-transactions"
         );
