@@ -2,7 +2,7 @@
   <div>
     <h3>История покупок</h3>
     <table border="1">
-      <tr>
+      <tr class="table-header">
         <td>Дата</td>
         <td>Название эмитента</td>
         <td>Количество, шт.</td>
@@ -13,7 +13,7 @@
         <td>Тип</td>
         <td>Брокер</td>
       </tr>
-      <tr v-for="(transaction, i) in transactions" :key="i">
+      <tr v-for="(transaction, i) in transactions" :key="i" :class="{'odd-tr': isOddTr(i)}">
         <td>{{ transaction.transactionDate }}</td>
         <td>{{ transaction.issuerName }}</td>
         <td>{{ transaction.quantity }}</td>
@@ -53,8 +53,22 @@ export default {
         alert("Ошибка");
       }
     },
+    isOddTr(i) {
+      return i % 2 === 0;
+    }
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.table-header {
+  background-color: rgb(60, 56, 52);
+  color: white;
+}
+tr:hover {
+  background-color: rgb(193, 190, 203);
+}
+.odd-tr {
+  background-color: rgb(244, 244, 244);
+}
+</style>
