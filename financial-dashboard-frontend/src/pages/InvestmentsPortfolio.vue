@@ -3,8 +3,8 @@
   <table border="1">
     <tr>
       <td>Название эмитента</td>
-      <td>Количество, шт.</td>
       <td>Брокер</td>
+      <td>Количество, шт.</td>
     </tr>
     <tr v-for="(item, i) in investmentsPortfolioInfo" :key="i">
       <td>{{ item.issuerName }}</td>
