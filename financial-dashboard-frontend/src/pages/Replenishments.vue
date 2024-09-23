@@ -38,7 +38,6 @@ export default {
         const response = await axios.get(
           "http://localhost:8081/api/replenishment-transactions"
         );
-        console.log(response);
         this.replenishments = response.data;
       } catch (e) {
         console.log(e);

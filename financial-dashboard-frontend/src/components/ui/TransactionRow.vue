@@ -1,12 +1,11 @@
 <template>
-  <div class="transaction-row">
-    <table></table>
-  </div>
+  <tr class="transaction-row">
+  </tr>
 </template>
 
 <script>
 export default {
-  name: "transaction-row",
+  name: 'transaction-row'
 };
 </script>
 

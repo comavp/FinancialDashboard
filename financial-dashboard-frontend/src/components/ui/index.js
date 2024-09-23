@@ -1,4 +1,4 @@
 import TransactionRow from "@/components/ui/TransactionRow.vue";
-import TransactionTable from "@/components/ui/TransactionTable.vue";
+import TransactionsTable from "@/components/ui/TransactionsTable.vue";
 
-export default [TransactionRow, TransactionTable];
+export default [TransactionRow, TransactionsTable];

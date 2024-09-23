@@ -9,4 +9,4 @@ components.forEach((component) => {
   app.component(component.name, component);
 });
 
-createApp(App).use(router).mount("#app");
+app.use(router).mount("#app");
