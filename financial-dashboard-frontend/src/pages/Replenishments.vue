@@ -1,22 +1,7 @@
 <template>
   <div>
     <h3>История пополений</h3>
-    <table border="1">
-      <tr>
-        <td>Дата</td>
-        <td>Сумма, руб</td>
-        <td>Нал/безнал</td>
-        <td>Тип</td>
-        <td>Брокер</td>
-      </tr>
-      <tr v-for="(replenishment, i) in replenishments" :key="i">
-        <td>{{ replenishment.transactionDate }}</td>
-        <td>{{ replenishment.sum }}</td>
-        <td>{{ replenishment.nonCash }}</td>
-        <td>{{ replenishment.type }}</td>
-        <td>{{ replenishment.brokerName }}</td>
-      </tr>
-    </table>
+    <transactions-table :transactions="replenishments" :columnNames="columnNames"></transactions-table>
   </div>
 </template>
 
@@ -27,6 +12,13 @@ export default {
   data() {
     return {
       replenishments: [],
+      columnNames: [
+        'Дата',
+        'Сумма, руб',
+        'Нал/безнал',
+        'Тип',
+        'Брокер'
+      ]
     };
   },
   mounted() {

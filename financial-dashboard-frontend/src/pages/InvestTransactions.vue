@@ -35,7 +35,6 @@ export default {
           "http://localhost:8081/api/invest-transactions"
         );
         this.transactions = response.data;
-        console.log(this.transactions)
       } catch (e) {
         console.log(e);
         alert("Ошибка");

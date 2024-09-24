@@ -1,17 +1,6 @@
 <template>
   <h3>Инфмормация о портфеле</h3>
-  <table border="1">
-    <tr>
-      <td>Название эмитента</td>
-      <td>Брокер</td>
-      <td>Количество, шт.</td>
-    </tr>
-    <tr v-for="(item, i) in investmentsPortfolioInfo" :key="i">
-      <td>{{ item.issuerName }}</td>
-      <td>{{ item.brokerName }}</td>
-      <td>{{ item.quantity }}</td>
-    </tr>
-  </table>
+  <transactions-table :transactions="investmentsPortfolioInfo" :columnNames="columnNames" ></transactions-table>
 </template>
 
 <script>
@@ -21,6 +10,11 @@ export default {
   data() {
     return {
       investmentsPortfolioInfo: [],
+      columnNames: [
+        'Название эмитента',
+        'Брокер',
+        'Количество, шт.'
+      ]
     };
   },
   mounted() {
