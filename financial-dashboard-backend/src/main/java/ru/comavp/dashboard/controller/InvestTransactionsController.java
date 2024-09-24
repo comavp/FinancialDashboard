@@ -30,4 +30,9 @@ public class InvestTransactionsController {
     public ResponseEntity<Iterable<InvestmentPortfolioInfoDto>> getInvestmentPortfolioInfo() {
         return ResponseEntity.ok(investTransactionsService.getInvestmentPortfolioInfo());
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getInvestTransactionsNumber() {
+        return ResponseEntity.ok(investTransactionsService.getInvestTransactionsNumber());
+    }
 }

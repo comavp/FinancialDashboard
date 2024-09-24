@@ -209,4 +209,15 @@ class InvestTransactionsServiceTest {
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    public void testGetInvestTransactionsNumber() {
+        when(repository.count()).thenReturn(100L);
+        long actualResult = investTransactionsService.getInvestTransactionsNumber();
+
+        verify(repository).count();
+        verifyNoMoreInteractions(repository);
+
+        assertEquals(100L, actualResult);
+    }
 }

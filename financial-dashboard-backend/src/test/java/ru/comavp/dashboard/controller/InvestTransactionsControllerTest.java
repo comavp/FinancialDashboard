@@ -12,14 +12,14 @@ import ru.comavp.dashboard.service.InvestTransactionsService;
 import ru.comavp.dashboard.utils.DataUtils;
 
 import java.util.List;
+import java.util.Random;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(InvestTransactionsController.class)
 class InvestTransactionsControllerTest {
@@ -72,5 +72,14 @@ class InvestTransactionsControllerTest {
                 .andExpect(jsonPath("$[0].length()").value(2))
                 .andExpect(jsonPath("$[0].brokerNameToQuantityMap.length()").value(2));
         verify(investTransactionsService).getInvestmentPortfolioInfo();
+    }
+
+    @Test
+    public void testGetInvestTransactionsNumber() throws Exception {
+        when(investTransactionsService.getInvestTransactionsNumber()).thenReturn(100L);
+        mockMvc.perform(get(BASE_URL + "/count"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("100"));
+        verify(investTransactionsService).getInvestTransactionsNumber();
     }
 }

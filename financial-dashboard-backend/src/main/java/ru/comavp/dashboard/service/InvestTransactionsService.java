@@ -71,4 +71,8 @@ public class InvestTransactionsService {
                         .build())
                 .toList();
     }
+
+    public Long getInvestTransactionsNumber() {
+        return investTransactionsRepository.count();
+    }
 }

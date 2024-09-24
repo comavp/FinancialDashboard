@@ -46,4 +46,8 @@ public class ReplenishmentHistoryService {
     private List<ReplenishmentTransactionDto> findAfterDate(LocalDate date) {
         return mapper.toDtoList(replenishmentHistoryRepository.findByTransactionDateGreaterThanEqual(date));
     }
+
+    public Long getReplenishmentsNumber() {
+        return replenishmentHistoryRepository.count();
+    }
 }

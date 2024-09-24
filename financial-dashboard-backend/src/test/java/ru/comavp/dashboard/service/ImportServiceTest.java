@@ -28,20 +28,20 @@ public class ImportServiceTest {
     @Test
     public void testImportAllDataFromWorkBookSheet() throws IOException {
         importService.importAllDataFromWorkBookSheet(readFileToImport());
-        assertEquals(124, replenishmentHistoryService.findAll().size());
-        assertEquals(299, investTransactionsService.findAll().size());
+        assertEquals(124, replenishmentHistoryService.getReplenishmentsNumber());
+        assertEquals(299, investTransactionsService.getInvestTransactionsNumber());
     }
 
     @Test
     public void testImportInvestTransactions() throws IOException {
         importService.importInvestTransactions(readFileToImport());
-        assertEquals(299, investTransactionsService.findAll().size());
+        assertEquals(299, investTransactionsService.getInvestTransactionsNumber());
     }
 
     @Test
     public void testImportReplenishmentTransactions() throws IOException {
         importService.importReplenishmentTransactions(readFileToImport());
-        assertEquals(124, replenishmentHistoryService.findAll().size());
+        assertEquals(124, replenishmentHistoryService.getReplenishmentsNumber());
     }
 
     private Workbook readFileToImport() throws IOException {

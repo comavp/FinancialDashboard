@@ -24,4 +24,9 @@ public class ReplenishmentHistoryController {
     public ResponseEntity<Iterable<ReplenishmentTransactionDto>> findReplenishmentsByFilter(@RequestBody ReplenishmentsFilter filter) {
         return ResponseEntity.ok(replenishmentService.findByFilter(filter));
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getReplenishmentsNumber() {
+        return ResponseEntity.ok(replenishmentService.getReplenishmentsNumber());
+    }
 }

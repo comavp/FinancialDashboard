@@ -151,4 +151,15 @@ class ReplenishmentHistoryServiceTest {
         assertEquals(3, result.size());
         assertTrue(result.stream().map(ReplenishmentTransactionDto::getBrokerName).allMatch("Broker 1"::equals));
     }
+
+    @Test
+    public void testGetReplenishmentsNumber() {
+        when(repository.count()).thenReturn(10L);
+        long actualResult = replenishmentHistoryService.getReplenishmentsNumber();
+
+        verify(repository).count();
+        verifyNoMoreInteractions(repository);
+
+        assertEquals(10L, actualResult);
+    }
 }

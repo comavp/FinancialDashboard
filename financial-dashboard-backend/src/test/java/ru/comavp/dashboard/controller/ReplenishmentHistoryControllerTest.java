@@ -18,8 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ReplenishmentHistoryController.class)
 class ReplenishmentHistoryControllerTest {
@@ -61,5 +60,14 @@ class ReplenishmentHistoryControllerTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].length()").value(5));
         verify(replenishmentHistoryService).findByFilter(any());
+    }
+
+    @Test
+    public void testGetInvestTransactionsNumber() throws Exception {
+        when(replenishmentHistoryService.getReplenishmentsNumber()).thenReturn(10L);
+        mockMvc.perform(get(BASE_URL + "/count"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("10"));
+        verify(replenishmentHistoryService).getReplenishmentsNumber();
     }
 }
