@@ -9,12 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class InvestTransactionsFilter {
+public class InvestTransactionsFilter extends PageableFilter {
 
     private String brokerName;
     private int year;
-    @Builder.Default
-    private int pageNumber = 0;
-    @Builder.Default
-    private int itemsOnPage = 100;
 }

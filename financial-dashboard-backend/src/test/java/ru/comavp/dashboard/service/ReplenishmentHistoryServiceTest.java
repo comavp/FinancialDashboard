@@ -7,6 +7,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import ru.comavp.dashboard.model.dto.ReplenishmentTransactionDto;
 import ru.comavp.dashboard.model.dto.ReplenishmentsFilter;
 import ru.comavp.dashboard.model.mappers.ReplenishmentMapper;
@@ -31,6 +34,8 @@ class ReplenishmentHistoryServiceTest {
 
     @InjectMocks
     private ReplenishmentHistoryService replenishmentHistoryService;
+
+    private final PageRequest EXPECTED_PAGING = PageRequest.of(0, 100);
 
     @Test
     public void testSaveAllTransactions() {
@@ -77,11 +82,12 @@ class ReplenishmentHistoryServiceTest {
                 DataUtils.generateReplenishmentTransaction(LocalDate.now(), "Broker 1"),
                 DataUtils.generateReplenishmentTransaction(LocalDate.now(), "Broker 1")
         );
-        when(repository.findAll()).thenReturn(entityList);
+        var entityPage = new PageImpl<>(entityList, PageRequest.of(0, 3), 3);
+        when(repository.findAll(any(Pageable.class))).thenReturn(entityPage);
 
         var result = replenishmentHistoryService.findByFilter(new ReplenishmentsFilter());
 
-        verify(repository).findAll();
+        verify(repository).findAll(any(Pageable.class));
         verifyNoMoreInteractions(repository);
 
         assertNotNull(result);
@@ -98,11 +104,11 @@ class ReplenishmentHistoryServiceTest {
         );
         var filter = new ReplenishmentsFilter();
         filter.setBrokerName("Broker 1");
-        when(repository.findByBrokerName(any())).thenReturn(entityList);
+        when(repository.findByBrokerName(any(), any())).thenReturn(entityList);
 
         var result = replenishmentHistoryService.findByFilter(filter);
 
-        verify(repository).findByBrokerName(eq("Broker 1"));
+        verify(repository).findByBrokerName(eq("Broker 1"), eq(EXPECTED_PAGING));
         verifyNoMoreInteractions(repository);
 
         assertNotNull(result);
@@ -119,11 +125,11 @@ class ReplenishmentHistoryServiceTest {
         );
         var filter = new ReplenishmentsFilter();
         filter.setYear(2024);
-        when(repository.findByTransactionDateGreaterThanEqual(any())).thenReturn(entityList);
+        when(repository.findByTransactionDateGreaterThanEqual(any(), any())).thenReturn(entityList);
 
         var result = replenishmentHistoryService.findByFilter(filter);
 
-        verify(repository).findByTransactionDateGreaterThanEqual(eq(LocalDate.of(2024, 1, 1)));
+        verify(repository).findByTransactionDateGreaterThanEqual(eq(LocalDate.of(2024, 1, 1)), eq(EXPECTED_PAGING));
         verifyNoMoreInteractions(repository);
 
         assertNotNull(result);
@@ -139,12 +145,12 @@ class ReplenishmentHistoryServiceTest {
                 DataUtils.generateReplenishmentTransaction(LocalDate.now(), "Broker 1")
         );
         var filter = new ReplenishmentsFilter(2024, "Broker 1");
-        when(repository.findByBrokerNameAndTransactionDateGreaterThanEqual(anyString(), any())).thenReturn(entityList);
+        when(repository.findByBrokerNameAndTransactionDateGreaterThanEqual(anyString(), any(), any())).thenReturn(entityList);
 
         var result = replenishmentHistoryService.findByFilter(filter);
 
         verify(repository).findByBrokerNameAndTransactionDateGreaterThanEqual(eq("Broker 1"),
-                eq(LocalDate.of(2024, 1, 1)));
+                eq(LocalDate.of(2024, 1, 1)), eq(EXPECTED_PAGING));
         verifyNoMoreInteractions(repository);
 
         assertNotNull(result);

@@ -12,7 +12,6 @@ import ru.comavp.dashboard.service.InvestTransactionsService;
 import ru.comavp.dashboard.utils.DataUtils;
 
 import java.util.List;
-import java.util.Random;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
