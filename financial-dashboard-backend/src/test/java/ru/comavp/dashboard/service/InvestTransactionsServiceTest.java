@@ -7,6 +7,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import ru.comavp.dashboard.model.dto.InvestTransactionDto;
 import ru.comavp.dashboard.model.dto.InvestTransactionsFilter;
 import ru.comavp.dashboard.model.dto.InvestmentPortfolioInfoDto;
@@ -33,6 +36,8 @@ class InvestTransactionsServiceTest {
 
     @InjectMocks
     private InvestTransactionsService investTransactionsService;
+
+    private final PageRequest EXPECTED_PAGING = PageRequest.of(0, 100);
 
     @Test
     public void testSaveAllTransactions() {
@@ -81,11 +86,12 @@ class InvestTransactionsServiceTest {
                 DataUtils.generateInvestTransaction("Issuer 2", LocalDate.now(), "Broker 1"),
                 DataUtils.generateInvestTransaction("Issuer 3", LocalDate.now(), "Broker 1")
         );
-        when(repository.findAll()).thenReturn(entityList);
+        var entityPage = new PageImpl<>(entityList, PageRequest.of(0, 3), 3);
+        when(repository.findAll(any(Pageable.class))).thenReturn(entityPage);
 
         var result = investTransactionsService.findByFilter(new InvestTransactionsFilter());
 
-        verify(repository).findAll();
+        verify(repository).findAll(eq(EXPECTED_PAGING));
         verifyNoMoreInteractions(repository);
 
         assertNotNull(result);
@@ -104,11 +110,11 @@ class InvestTransactionsServiceTest {
         );
         var filter = new InvestTransactionsFilter();
         filter.setBrokerName("Broker 1");
-        when(repository.findByBrokerName(any())).thenReturn(entityList);
+        when(repository.findByBrokerName(any(), any())).thenReturn(entityList);
 
         var result = investTransactionsService.findByFilter(filter);
 
-        verify(repository).findByBrokerName(eq("Broker 1"));
+        verify(repository).findByBrokerName(eq("Broker 1"), eq(EXPECTED_PAGING));
         verifyNoMoreInteractions(repository);
 
         assertNotNull(result);
@@ -127,11 +133,11 @@ class InvestTransactionsServiceTest {
         );
         var filter = new InvestTransactionsFilter();
         filter.setYear(2024);
-        when(repository.findByTransactionDateGreaterThanEqual(any())).thenReturn(entityList);
+        when(repository.findByTransactionDateGreaterThanEqual(any(), any())).thenReturn(entityList);
 
         var result = investTransactionsService.findByFilter(filter);
 
-        verify(repository).findByTransactionDateGreaterThanEqual(eq(LocalDate.of(2024, 1, 1)));
+        verify(repository).findByTransactionDateGreaterThanEqual(eq(LocalDate.of(2024, 1, 1)), eq(EXPECTED_PAGING));
         verifyNoMoreInteractions(repository);
 
         assertNotNull(result);
@@ -148,13 +154,16 @@ class InvestTransactionsServiceTest {
                 DataUtils.generateInvestTransaction("Issuer 2", LocalDate.now(), "Broker 1"),
                 DataUtils.generateInvestTransaction("Issuer 3", LocalDate.now(), "Broker 1")
         );
-        var filter = new InvestTransactionsFilter("Broker 1", 2024);
-        when(repository.findByBrokerNameAndTransactionDateGreaterThanEqual(anyString(), any())).thenReturn(entityList);
+        var filter = InvestTransactionsFilter.builder()
+                .brokerName("Broker 1")
+                .year(2024)
+                .build();
+        when(repository.findByBrokerNameAndTransactionDateGreaterThanEqual(anyString(), any(), any())).thenReturn(entityList);
 
         var result = investTransactionsService.findByFilter(filter);
 
         verify(repository).findByBrokerNameAndTransactionDateGreaterThanEqual(eq("Broker 1"),
-                eq(LocalDate.of(2024, 1, 1)));
+                eq(LocalDate.of(2024, 1, 1)), eq(EXPECTED_PAGING));
         verifyNoMoreInteractions(repository);
 
         assertNotNull(result);

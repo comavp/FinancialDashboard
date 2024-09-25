@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.PageRequest;
 import ru.comavp.dashboard.model.entity.InvestTransaction;
 import ru.comavp.dashboard.utils.DataUtils;
 
@@ -36,7 +37,7 @@ class InvestTransactionsRepositoryTest {
     @Test
     public void testFindByBrokerName() {
         String testBroker = "Green broker";
-        var result = repository.findByBrokerName(testBroker);
+        var result = repository.findByBrokerName(testBroker, PageRequest.of(0, 6));
         assertNotNull(result);
         assertEquals(4, result.size());
         assertTrue(result.stream().allMatch(item -> testBroker.equals(item.getBrokerName())));
@@ -44,7 +45,7 @@ class InvestTransactionsRepositoryTest {
 
     @Test
     public void testFindEmptyListByBrokerName() {
-        var result = repository.findByBrokerName("Test broker");
+        var result = repository.findByBrokerName("Test broker", PageRequest.of(0, 6));
         assertNotNull(result);
         assertTrue(result.isEmpty());
     };
@@ -52,7 +53,7 @@ class InvestTransactionsRepositoryTest {
     @Test
     public void testFindByTransactionDateGreaterThanEqual() {
         var testDate = LocalDate.of(2000, 1, 1);
-        var result = repository.findByTransactionDateGreaterThanEqual(testDate);
+        var result = repository.findByTransactionDateGreaterThanEqual(testDate, PageRequest.of(0, 6));
         assertNotNull(result);
         assertEquals(4, result.size());
         assertTrue(result.stream().map(InvestTransaction::getTransactionDate)
@@ -62,7 +63,7 @@ class InvestTransactionsRepositoryTest {
     @Test
     public void testFindEmptyListByTransactionDateGreaterThanEqual() {
         var testDate = LocalDate.of(2002, 1, 1);
-        var result = repository.findByTransactionDateGreaterThanEqual(testDate);
+        var result = repository.findByTransactionDateGreaterThanEqual(testDate, PageRequest.of(0, 6));
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
@@ -71,7 +72,7 @@ class InvestTransactionsRepositoryTest {
     public void testFindByBrokerNameAndTransactionDateGreaterThanEqual() {
         String testBroker = "Green broker";
         var testDate = LocalDate.of(2000, 1, 1);
-        var result = repository.findByBrokerNameAndTransactionDateGreaterThanEqual(testBroker, testDate);
+        var result = repository.findByBrokerNameAndTransactionDateGreaterThanEqual(testBroker, testDate, PageRequest.of(0, 6));
         assertNotNull(result);
         assertEquals(2, result.size());
         assertTrue(result.stream().allMatch(item -> testBroker.equals(item.getBrokerName()) &&
@@ -82,7 +83,7 @@ class InvestTransactionsRepositoryTest {
     public void testFindEmptyListByBrokerNameAndTransactionDateGreaterThanEqual_MissingBrokerName() {
         String testBroker = "Test broker";
         var testDate = LocalDate.of(2000, 1, 1);
-        var result = repository.findByBrokerNameAndTransactionDateGreaterThanEqual(testBroker, testDate);
+        var result = repository.findByBrokerNameAndTransactionDateGreaterThanEqual(testBroker, testDate, PageRequest.of(0, 6));
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
@@ -91,7 +92,7 @@ class InvestTransactionsRepositoryTest {
     public void testFindEmptyListByBrokerNameAndTransactionDateGreaterThanEqual_MissingTransactionDate() {
         String testBroker = "Green broker";
         var testDate = LocalDate.of(2002, 1, 1);
-        var result = repository.findByBrokerNameAndTransactionDateGreaterThanEqual(testBroker, testDate);
+        var result = repository.findByBrokerNameAndTransactionDateGreaterThanEqual(testBroker, testDate, PageRequest.of(0, 6));
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }

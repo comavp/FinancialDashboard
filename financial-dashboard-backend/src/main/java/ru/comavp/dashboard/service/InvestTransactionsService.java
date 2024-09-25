@@ -1,6 +1,8 @@
 package ru.comavp.dashboard.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.comavp.dashboard.model.dto.InvestTransactionDto;
 import ru.comavp.dashboard.model.dto.InvestTransactionsFilter;
@@ -31,27 +33,39 @@ public class InvestTransactionsService {
 
     public List<InvestTransactionDto> findByFilter(InvestTransactionsFilter filter) {
         if (filter.getYear() == 0 && filter.getBrokerName() == null) {
-            return findAll();
+            return findAll(extractCurrentPage(filter));
         } else if (filter.getYear() == 0) {
-            return findByBrokerName(filter.getBrokerName());
+            return findByBrokerName(filter.getBrokerName(), extractCurrentPage(filter));
         } if (filter.getBrokerName() == null) {
-            return findAfterDate(LocalDate.of(filter.getYear(), 1, 1));
+            return findAfterDate(LocalDate.of(filter.getYear(), 1, 1), extractCurrentPage(filter));
         }
 
         return mapper.mapToDtoList(investTransactionsRepository.findByBrokerNameAndTransactionDateGreaterThanEqual(
-                filter.getBrokerName(), LocalDate.of(filter.getYear(), 1, 1)));
+                filter.getBrokerName(), LocalDate.of(filter.getYear(), 1, 1), extractCurrentPage(filter)));
     }
 
     public List<InvestmentPortfolioInfoDto> getInvestmentPortfolioInfo() {
         return mapToDto(investTransactionsRepository.getInvestmentPortfolioInfo());
     }
 
-    private List<InvestTransactionDto> findByBrokerName(String brokerName) {
-        return mapper.mapToDtoList(investTransactionsRepository.findByBrokerName(brokerName));
+    public Long getInvestTransactionsNumber() {
+        return investTransactionsRepository.count();
     }
 
-    private List<InvestTransactionDto> findAfterDate(LocalDate date) {
-        return mapper.mapToDtoList(investTransactionsRepository.findByTransactionDateGreaterThanEqual(date));
+    private Pageable extractCurrentPage(InvestTransactionsFilter filter) {
+        return PageRequest.of(filter.getPageNumber(), filter.getItemsOnPage());
+    }
+
+    private List<InvestTransactionDto> findAll(Pageable pageable) {
+        return mapper.mapToDtoList(investTransactionsRepository.findAll(pageable).toList());
+    }
+
+    private List<InvestTransactionDto> findByBrokerName(String brokerName, Pageable pageable) {
+        return mapper.mapToDtoList(investTransactionsRepository.findByBrokerName(brokerName, pageable));
+    }
+
+    private List<InvestTransactionDto> findAfterDate(LocalDate date, Pageable pageable) {
+        return mapper.mapToDtoList(investTransactionsRepository.findByTransactionDateGreaterThanEqual(date, pageable));
     }
 
     private List<InvestmentPortfolioInfoDto> mapToDto(List<InvestmentPortfolioInfo> entityList) {
@@ -70,9 +84,5 @@ public class InvestTransactionsService {
                                 )))
                         .build())
                 .toList();
-    }
-
-    public Long getInvestTransactionsNumber() {
-        return investTransactionsRepository.count();
     }
 }
