@@ -2,17 +2,7 @@
   <div>
     <h3>История покупок</h3>
     <transactions-table :transactions="transactions" :columnNames="columnNames"></transactions-table>
-    <div class="pages-container">
-      <div 
-        v-for="pageNumber in totalPages" 
-        :key="pageNumber" 
-        class="page" 
-        :class="{'current-page': currentPage === pageNumber}"
-        @click="changePage(pageNumber)"
-      >
-        {{ pageNumber }}
-      </div>
-    </div>
+    <pages-list :totalPages="totalPages" :currentPage="currentPage" @changePage="changePage"></pages-list>
   </div>
 </template>
 
@@ -81,21 +71,5 @@ export default {
 </script>
 
 <style scoped>
-.pages-container {
-  display: flex;
-  margin-top: 15px
-}
 
-.page {
-  border: 1px solid grey;
-  padding: 5px;
-}
-
-.current-page {
-  border: 2px solid black;
-}
-
-.page:hover {
-  background-color: rgb(193, 190, 203);
-}
 </style>
