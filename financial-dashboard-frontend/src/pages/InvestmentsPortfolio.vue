@@ -11,7 +11,10 @@ export default {
     return {
       investmentsPortfolioInfo: [],
       columnNames: [
+        'Тикер',
         'Название эмитента',
+        'ISIN',
+        'Категория',
         'Брокер',
         'Количество, шт.',
         'Текущая стоимость'
@@ -28,12 +31,18 @@ export default {
           "http://localhost:8081/api/invest-transactions/portfolio"
         );
         response.data.forEach((element) => {
+          const ticker = element.ticker;
           const issuerName = element.issuerName;
+          const isin = element.isin;
+          const category = element.category;
           const price = element.price;
           const brokerNameToQuantityMap = element.brokerNameToQuantityMap;
           for (let [key, value] of Object.entries(brokerNameToQuantityMap)) {
             const item = {
+              ticker: ticker,
               issuerName: issuerName,
+              isin: isin,
+              category: category,
               brokerName: key,
               quantity: value,
               cost: price * value
