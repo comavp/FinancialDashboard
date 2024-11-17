@@ -1,5 +1,5 @@
 <template>
-  <h3>Инфмормация о портфеле</h3>
+  <h3>Информация о портфеле</h3>
   <transactions-table :transactions="investmentsPortfolioInfo" :columnNames="columnNames" ></transactions-table>
 </template>
 
@@ -13,7 +13,8 @@ export default {
       columnNames: [
         'Название эмитента',
         'Брокер',
-        'Количество, шт.'
+        'Количество, шт.',
+        'Текущая стоимость'
       ]
     };
   },
@@ -28,12 +29,14 @@ export default {
         );
         response.data.forEach((element) => {
           const issuerName = element.issuerName;
+          const price = element.price;
           const brokerNameToQuantityMap = element.brokerNameToQuantityMap;
           for (let [key, value] of Object.entries(brokerNameToQuantityMap)) {
             const item = {
               issuerName: issuerName,
               brokerName: key,
               quantity: value,
+              cost: price * value
             };
             this.investmentsPortfolioInfo.push(item);
           }
