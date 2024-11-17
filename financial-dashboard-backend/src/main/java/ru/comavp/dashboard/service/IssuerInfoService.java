@@ -20,4 +20,8 @@ public class IssuerInfoService {
             }
         });
     }
+
+    public List<IssuerInfo> findAll() {
+        return issuerInfoRepository.findAll();
+    }
 }

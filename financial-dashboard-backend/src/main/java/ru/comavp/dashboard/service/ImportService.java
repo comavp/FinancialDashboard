@@ -239,7 +239,7 @@ public class ImportService {
         return CellType.BLANK.equals(cell.getCellType()) && cell.getStringCellValue().isEmpty();
     }
 
-    private CompletableFuture<List<IssuerInfo>> extractIssuersInfo(Sheet currentSheet, int startPosition) { // todo
+    private CompletableFuture<List<IssuerInfo>> extractIssuersInfo(Sheet currentSheet, int startPosition) {
         return CompletableFuture.supplyAsync(() -> {
             var rowIterator = currentSheet.rowIterator();
             int rowsToSkip = 1;

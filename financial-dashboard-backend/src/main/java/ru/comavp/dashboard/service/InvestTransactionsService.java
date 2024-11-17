@@ -9,6 +9,7 @@ import ru.comavp.dashboard.model.dto.InvestTransactionsFilter;
 import ru.comavp.dashboard.model.dto.InvestmentPortfolioInfoDto;
 import ru.comavp.dashboard.model.entity.InvestTransaction;
 import ru.comavp.dashboard.model.entity.InvestmentPortfolioInfo;
+import ru.comavp.dashboard.model.entity.IssuerInfo;
 import ru.comavp.dashboard.model.mappers.InvestTransactionMapper;
 import ru.comavp.dashboard.repository.InvestTransactionsRepository;
 
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class InvestTransactionsService {
 
     private InvestTransactionsRepository investTransactionsRepository;
+    private IssuerInfoService issuerInfoService;
     private MoexService moexService;
     private InvestTransactionMapper mapper;
 
@@ -70,13 +72,24 @@ public class InvestTransactionsService {
     }
 
     private List<InvestmentPortfolioInfoDto> mapToDto(List<InvestmentPortfolioInfo> entityList) {
+        var issuersInfoListToIssuerName = issuerInfoService.findAll()
+                .stream()
+                .collect(Collectors.toMap(
+                        IssuerInfo::getIssuerName,
+                        item -> item
+                ));
         return entityList.stream()
                 .collect(Collectors.groupingBy(InvestmentPortfolioInfo::getIssuerName))
                 .entrySet()
                 .stream()
+                .filter(item -> issuersInfoListToIssuerName.containsKey(item.getKey()))
                 .map(entry -> InvestmentPortfolioInfoDto.builder()
                         .issuerName(entry.getKey())
-                        .price(moexService.getPriceByIssuerNameAndDate(entry.getKey(), LocalDate.now()))
+                        .ticker(issuersInfoListToIssuerName.get(entry.getKey()).getTicker())
+                        .isin(issuersInfoListToIssuerName.get(entry.getKey()).getIsin())
+                        .category(issuersInfoListToIssuerName.get(entry.getKey()).getCategory())
+                        .price(11.0)
+                        //.price(moexService.getPriceByIssuerNameAndDate(entry.getKey(), LocalDate.now())) todo
                         .brokerNameToQuantityMap(entry.getValue()
                                 .stream()
                                 .filter(item -> item.getBrokerName() != null && item.getQuantity() != null)

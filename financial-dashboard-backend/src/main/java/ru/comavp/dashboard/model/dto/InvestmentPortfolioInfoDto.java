@@ -9,7 +9,10 @@ import java.util.Map;
 @Builder
 public class InvestmentPortfolioInfoDto {
 
+    private String ticker;
     private String issuerName;
+    private String isin;
+    private String category;
     private Double price;
     private Map<String, Long> brokerNameToQuantityMap;
 }
