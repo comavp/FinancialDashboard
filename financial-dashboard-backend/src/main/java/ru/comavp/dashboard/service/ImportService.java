@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import ru.comavp.dashboard.config.ImportProperties;
 import ru.comavp.dashboard.model.entity.InvestTransaction;
+import ru.comavp.dashboard.model.entity.IssuerInfo;
 import ru.comavp.dashboard.model.entity.ReplenishmentTransaction;
 
 import java.util.ArrayList;
@@ -17,29 +18,38 @@ public class ImportService {
 
     private InvestTransactionsService investTransactionsService;
     private ReplenishmentHistoryService replenishmentHistoryService;
+    private IssuerInfoService issuerInfoService;
     private ImportProperties importProperties;
 
     public void importAllDataFromWorkBookSheet(Workbook workbook) {
-        var currentSheet = workbook.getSheet(importProperties.getSheetName());
-        int replenishmentStartColumn = findStartPosition(currentSheet, importProperties.getReplenishmentsStartPosition());
-        int investmentsStarColumn = findStartPosition(currentSheet, importProperties.getInvestmentsStartPosition());
+        var historySheet = workbook.getSheet(importProperties.getHistorySheetName());
+        var issuersInfoSheet = workbook.getSheet(importProperties.getIssuersInfoSheetName());
+
+        int replenishmentStartColumn = findStartPosition(historySheet, importProperties.getReplenishmentsStartPosition());
+        int investmentsStartColumn = findStartPosition(historySheet, importProperties.getInvestmentsStartPosition());
+        int issuersInfoStartColumn = findStartPosition(issuersInfoSheet, importProperties.getIssuersInfoSheetName());
 
         CompletableFuture.allOf(
-                extractReplenishmentTransactions(currentSheet, replenishmentStartColumn)
+                extractReplenishmentTransactions(historySheet, replenishmentStartColumn)
                         .thenCompose(transactionsList -> {
                             replenishmentHistoryService.saveAllTransactions(transactionsList);
                             return CompletableFuture.completedFuture(null);
                         }),
-                extractInvestTransactions(currentSheet, investmentsStarColumn)
+                extractInvestTransactions(historySheet, investmentsStartColumn)
                         .thenCompose(transactionsList -> {
                             investTransactionsService.saveAllTransactions(transactionsList);
+                            return CompletableFuture.completedFuture(null);
+                        }),
+                extractIssuersInfo(issuersInfoSheet, issuersInfoStartColumn)
+                        .thenCompose(issuerInfoList -> {
+                            issuerInfoService.saveAllUniqueIssuerInfoItems(issuerInfoList);
                             return CompletableFuture.completedFuture(null);
                         })
         ).join();
     }
 
     public void importInvestTransactions(Workbook workbook) {
-        var currentSheet = workbook.getSheet(importProperties.getSheetName());
+        var currentSheet = workbook.getSheet(importProperties.getHistorySheetName());
         int investmentsStarColumn = findStartPosition(currentSheet, importProperties.getInvestmentsStartPosition());
         extractInvestTransactions(currentSheet, investmentsStarColumn)
                 .thenCompose(transactionsList -> {
@@ -50,11 +60,22 @@ public class ImportService {
     }
 
     public void importReplenishmentTransactions(Workbook workbook) {
-        var currentSheet = workbook.getSheet(importProperties.getSheetName());
+        var currentSheet = workbook.getSheet(importProperties.getHistorySheetName());
         int replenishmentStartColumn = findStartPosition(currentSheet, importProperties.getReplenishmentsStartPosition());
         extractReplenishmentTransactions(currentSheet, replenishmentStartColumn)
                 .thenCompose(transactionsList -> {
                     replenishmentHistoryService.saveAllTransactions(transactionsList);
+                    return CompletableFuture.completedFuture(null);
+                })
+                .join();
+    }
+
+    public void importIssuersInfo(Workbook workbook) {
+        var currentSheet = workbook.getSheet(importProperties.getIssuersInfoSheetName());
+        int issuerInfoStartColumn = findStartPosition(currentSheet, importProperties.getIssuersInfoStartPosition());
+        extractIssuersInfo(currentSheet, issuerInfoStartColumn)
+                .thenCompose(issuerInfoList -> {
+                    issuerInfoService.saveAllUniqueIssuerInfoItems(issuerInfoList);
                     return CompletableFuture.completedFuture(null);
                 })
                 .join();
@@ -100,6 +121,10 @@ public class ImportService {
 
     private boolean isEndOfInvestmentsTransactions(Row row) {
         return row.getFirstCellNum() != 6 && row.getFirstCellNum() != 0;
+    }
+
+    private boolean isEndOfIssuersInfo(Row row) {
+        return "Сбербанк".equals(row.getCell(0).getStringCellValue());
     }
 
     private ReplenishmentTransaction extractReplenishmentTransactionsFromRow(Row currentRow, int startPosition) {
@@ -212,5 +237,59 @@ public class ImportService {
 
     private boolean isCellEmpty(Cell cell) {
         return CellType.BLANK.equals(cell.getCellType()) && cell.getStringCellValue().isEmpty();
+    }
+
+    private CompletableFuture<List<IssuerInfo>> extractIssuersInfo(Sheet currentSheet, int startPosition) { // todo
+        return CompletableFuture.supplyAsync(() -> {
+            var rowIterator = currentSheet.rowIterator();
+            int rowsToSkip = 1;
+
+            while(rowIterator.hasNext() && rowsToSkip > 0) {
+                rowIterator.next();
+                rowsToSkip--;
+            }
+
+            List<IssuerInfo> resultList = new ArrayList<>();
+
+            while(rowIterator.hasNext()) {
+                var currentRow = rowIterator.next();
+                if (isEndOfIssuersInfo(currentRow)) {
+                    break;
+                }
+                resultList.add(extractIssuerInfoFromRow(currentRow, startPosition));
+            }
+
+            return resultList;
+        });
+    }
+
+    private IssuerInfo extractIssuerInfoFromRow(Row currentRow, int startPosition) {
+        var cellIterator = currentRow.cellIterator();
+        List<Cell> cellsList = new ArrayList<>();
+
+        while(cellIterator.hasNext() && startPosition > 1 && currentRow.getFirstCellNum() == 0) {
+            cellIterator.next();
+            startPosition--;
+        }
+
+        var currentCell = cellIterator.next();
+        cellsList.add(currentCell);
+
+        while (cellIterator.hasNext() && currentCell.getAddress().getColumn() < 3) {
+            currentCell = cellIterator.next();
+            cellsList.add(currentCell);
+        }
+
+        return mapCellsIssuerInfo(cellsList);
+    }
+
+    private IssuerInfo mapCellsIssuerInfo(List<Cell> cellsList) {
+        var entity = new IssuerInfo();
+        int ind = 0;
+        entity.setTicker(cellsList.get(ind++).getStringCellValue());
+        entity.setIssuerName(cellsList.get(ind++).getStringCellValue());
+        entity.setIsin(cellsList.get(ind++).getStringCellValue());
+        entity.setCategory(cellsList.get(ind).getStringCellValue());
+        return entity;
     }
 }

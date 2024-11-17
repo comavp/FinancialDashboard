@@ -3,3 +3,5 @@ databaseChangeLog:
       file: liquibase/db.changelog-invest-transactions.yaml
   - include:
       file: liquibase/db.changelog-replenishment-history.yaml
+  - include:
+      file: liquibase/db.changelog-issuer-info.yaml

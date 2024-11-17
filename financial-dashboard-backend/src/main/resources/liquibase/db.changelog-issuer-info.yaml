@@ -4,7 +4,7 @@ databaseChangeLog:
       author: comavp
       changes:
         - createTable:
-            tableName: replenishment_history
+            tableName: issuer_info
             columns:
               - column:
                   name: id
@@ -14,19 +14,25 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: transaction_date
-                  type: DATE
+                  name: ticker
+                  type: varchar(50)
+                  constraints:
+                    unique: true
               - column:
-                  name: sum
-                  type: DOUBLE
+                  name: issuer_name
+                  type: varchar(50)
+                  constraints:
+                    unique: true
               - column:
-                  name: non_cash
-                  type: BOOLEAN
-              - column:
-                  name: type
+                  name: issuer_description
                   type: varchar(50)
               - column:
-                  name: broker_name
+                  name: isin
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+              - column:
+                  name: category
                   type: varchar(50)
               - column:
                   name: created_date

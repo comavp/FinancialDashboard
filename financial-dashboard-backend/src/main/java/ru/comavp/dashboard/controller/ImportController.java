@@ -35,4 +35,10 @@ public class ImportController {
         importService.importReplenishmentTransactions(FileUtils.getWorkbook(file));
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping(value = "/issuers-info", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity importIssuersInfo(@RequestParam("file") MultipartFile file) throws IOException {
+        importService.importIssuersInfo(FileUtils.getWorkbook(file));
+        return ResponseEntity.ok().build();
+    }
 }

@@ -20,6 +20,8 @@ spring:
     change-log: classpath:liquibase/db.changelog-dashboard.yaml
 
 import:
-  sheet-name: "История"
+  history-sheet-name: "История"
+  issuers-info-sheet-name: "Портфель"
   replenishments-start-position: "История пополнений"
   investments-start-position: "История покупок"
+  issuers-info-start-position: "Тикер"

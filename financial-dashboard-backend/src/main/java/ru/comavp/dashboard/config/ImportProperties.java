@@ -9,7 +9,9 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class ImportProperties {
 
-    private String sheetName;
+    private String historySheetName;
+    private String issuersInfoSheetName;
     private String replenishmentsStartPosition;
     private String investmentsStartPosition;
+    private String issuersInfoStartPosition;
 }
