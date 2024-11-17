@@ -10,5 +10,6 @@ import java.util.Map;
 public class InvestmentPortfolioInfoDto {
 
     private String issuerName;
+    private Double price;
     private Map<String, Long> brokerNameToQuantityMap;
 }

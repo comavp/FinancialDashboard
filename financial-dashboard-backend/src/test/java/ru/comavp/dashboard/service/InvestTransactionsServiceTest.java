@@ -31,6 +31,8 @@ class InvestTransactionsServiceTest {
 
     @Mock
     private InvestTransactionsRepository repository;
+    @Mock
+    private MoexService moexService;
     @Spy
     private InvestTransactionMapper mapper = Mappers.getMapper(InvestTransactionMapper.class);
 

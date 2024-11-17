@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class InvestTransactionsService {
 
     private InvestTransactionsRepository investTransactionsRepository;
+    private MoexService moexService;
     private InvestTransactionMapper mapper;
 
     public void saveAllTransactions(List<InvestTransaction> transactionList) {
@@ -75,6 +76,7 @@ public class InvestTransactionsService {
                 .stream()
                 .map(entry -> InvestmentPortfolioInfoDto.builder()
                         .issuerName(entry.getKey())
+                        .price(moexService.getPriceByIssuerNameAndDate(entry.getKey(), LocalDate.now()))
                         .brokerNameToQuantityMap(entry.getValue()
                                 .stream()
                                 .filter(item -> item.getBrokerName() != null && item.getQuantity() != null)
