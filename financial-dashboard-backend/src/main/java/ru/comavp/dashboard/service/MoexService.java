@@ -1,5 +1,6 @@
 package ru.comavp.dashboard.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.exdata.moex.IssClient;
 import ru.exdata.moex.IssClientBuilder;
@@ -15,33 +16,39 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class MoexService {
 
     private IssClient client = IssClientBuilder.builder().build();
 
     private static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final Integer RETRIES_CNT = 10;
+    private static final Integer RETRIES_CNT = 5;
 
     public Double getPriceByIssuerNameAndDate(String issuerName, LocalDate date) {
-        var client = IssClientBuilder.builder().build();
-        var request = client
-                .iss()
-                .securities()
-                .security(issuerName)
-                .aggregates()
-                .format()
-                .json();
+        try {
+            var client = IssClientBuilder.builder().build();
+            var request = client
+                    .iss()
+                    .securities()
+                    .security(issuerName)
+                    .aggregates()
+                    .format()
+                    .json();
 
-        var response = request.get(Map.of("date", date.format(DATE_PATTERN)));
-        var block = response.findBlock("aggregates").get();
-        int cnt = 1;
-        LocalDate nearestDate = date;
-        while (cnt <= RETRIES_CNT && (block.getData() == null || block.getData().isEmpty())) {
-            nearestDate = nearestDate.minus(1, ChronoUnit.DAYS);
-            block = getPriceByNearestDate(request, nearestDate);
-            cnt++;
+            var response = request.get(Map.of("date", date.format(DATE_PATTERN)));
+            var block = response.findBlock("aggregates").get();
+            int cnt = 1;
+            LocalDate nearestDate = date;
+            while (cnt <= RETRIES_CNT && (block.getData() == null || block.getData().isEmpty())) {
+                nearestDate = nearestDate.minus(1, ChronoUnit.DAYS);
+                block = getPriceByNearestDate(request, nearestDate);
+                cnt++;
+            }
+            return extractPrice(block.getData());
+        } catch (Exception e) {
+            log.error("Во время отправки запроса в MOEX ISS произошла ошибка: ", e);
+            return 0.0;
         }
-        return extractPrice(block.getData());
     }
 
     public List<Double> getPricesByIssuerNameBetweenDates(String issuerName, LocalDateTime from, LocalDateTime till) {

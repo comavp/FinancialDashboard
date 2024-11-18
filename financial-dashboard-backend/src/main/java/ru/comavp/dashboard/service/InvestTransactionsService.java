@@ -89,7 +89,7 @@ public class InvestTransactionsService {
                         .isin(issuersInfoListToIssuerName.get(entry.getKey()).getIsin())
                         .category(issuersInfoListToIssuerName.get(entry.getKey()).getCategory())
                         .price(11.0)
-                        //.price(moexService.getPriceByIssuerNameAndDate(entry.getKey(), LocalDate.now())) todo
+//                        .price(moexService.getPriceByIssuerNameAndDate(issuersInfoListToIssuerName.get(entry.getKey()).getTicker(), LocalDate.now()))
                         .brokerNameToQuantityMap(entry.getValue()
                                 .stream()
                                 .filter(item -> item.getBrokerName() != null && item.getQuantity() != null)
