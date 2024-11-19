@@ -5,3 +5,7 @@ databaseChangeLog:
       file: liquibase/db.changelog-replenishment-history.yaml
   - include:
       file: liquibase/db.changelog-issuer-info.yaml
+  - include:
+      file: liquibase/db.changelog-income-history.yaml
+  - include:
+      file: liquibase/db.changelog-expenses-history.yaml

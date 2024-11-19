@@ -68,7 +68,7 @@ class InvestTransactionsControllerTest {
         mockMvc.perform(get(BASE_URL + "/portfolio"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].length()").value(3))
+                .andExpect(jsonPath("$[0].length()").value(6))
                 .andExpect(jsonPath("$[0].brokerNameToQuantityMap.length()").value(2));
         verify(investTransactionsService).getInvestmentPortfolioInfo();
     }

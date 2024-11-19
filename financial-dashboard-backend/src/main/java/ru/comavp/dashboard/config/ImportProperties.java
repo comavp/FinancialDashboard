@@ -14,4 +14,6 @@ public class ImportProperties {
     private String replenishmentsStartPosition;
     private String investmentsStartPosition;
     private String issuersInfoStartPosition;
+    private String incomeStartPosition;
+    private String expensesStartPosition;
 }

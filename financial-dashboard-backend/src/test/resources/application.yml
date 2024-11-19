@@ -1,3 +1,6 @@
+server:
+  port: 8081
+
 spring:
   datasource:
     url: jdbc:h2:mem:dashboard_db
@@ -16,6 +19,10 @@ spring:
     enabled: false
 
 import:
-  sheet-name: "История"
+  history-sheet-name: "История"
+  issuers-info-sheet-name: "Портфель"
   replenishments-start-position: "История пополнений"
   investments-start-position: "История покупок"
+  issuers-info-start-position: "Тикер"
+  income-start-position: "Стипендия"
+  expenses-start-position: "Еда"

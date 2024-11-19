@@ -41,4 +41,22 @@ public class ImportController {
         importService.importIssuersInfo(FileUtils.getWorkbook(file));
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping(value = "/budget-transactions", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity importBudgetTransactions(@RequestParam("file") MultipartFile file) throws IOException {
+        importService.importBudgetTransactions(FileUtils.getWorkbook(file));
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/income-history", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity importIncomeTransactions(@RequestParam("file") MultipartFile file) throws IOException {
+        importService.importIncomeTransactions(FileUtils.getWorkbook(file));
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/expenses-history", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity importExpensesTransactions(@RequestParam("file") MultipartFile file) throws IOException {
+        importService.importExpensesTransactions(FileUtils.getWorkbook(file));
+        return ResponseEntity.ok().build();
+    }
 }

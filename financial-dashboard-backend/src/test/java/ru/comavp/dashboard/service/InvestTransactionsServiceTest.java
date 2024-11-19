@@ -15,6 +15,7 @@ import ru.comavp.dashboard.model.dto.InvestTransactionsFilter;
 import ru.comavp.dashboard.model.dto.InvestmentPortfolioInfoDto;
 import ru.comavp.dashboard.model.entity.InvestTransaction;
 import ru.comavp.dashboard.model.entity.InvestmentPortfolioInfo;
+import ru.comavp.dashboard.model.entity.IssuerInfo;
 import ru.comavp.dashboard.model.mappers.InvestTransactionMapper;
 import ru.comavp.dashboard.repository.InvestTransactionsRepository;
 import ru.comavp.dashboard.utils.DataUtils;
@@ -33,6 +34,8 @@ class InvestTransactionsServiceTest {
     private InvestTransactionsRepository repository;
     @Mock
     private MoexService moexService;
+    @Mock
+    private IssuerInfoService issuerInfoService;
     @Spy
     private InvestTransactionMapper mapper = Mappers.getMapper(InvestTransactionMapper.class);
 
@@ -183,6 +186,11 @@ class InvestTransactionsServiceTest {
                 new InvestmentPortfolioInfo("Issuer 2", "Broker 3", 10L),
                 new InvestmentPortfolioInfo("Issuer 1", null, 12L)
         );
+        var issuerInfoList = List.of(
+                IssuerInfo.builder().issuerName("Issuer 1").build(),
+                IssuerInfo.builder().issuerName("Issuer 2").build()
+        );
+        when(issuerInfoService.findAll()).thenReturn(issuerInfoList);
         when(repository.getInvestmentPortfolioInfo()).thenReturn(entityList);
 
         var result = investTransactionsService.getInvestmentPortfolioInfo();

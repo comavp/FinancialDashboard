@@ -25,3 +25,5 @@ import:
   replenishments-start-position: "История пополнений"
   investments-start-position: "История покупок"
   issuers-info-start-position: "Тикер"
+  income-start-position: "Стипендия"
+  expenses-start-position: "Еда"
