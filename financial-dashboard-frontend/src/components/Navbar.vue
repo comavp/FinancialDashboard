@@ -18,6 +18,18 @@
     >
       История пополнений
     </button>
+    <button
+      @click="processNavbarButtonClick('income-transactions')"
+      :class="{'active': buttonActive('/income-transactions')}"
+    >
+      Доходы
+    </button>
+    <button
+      @click="processNavbarButtonClick('expenses-transactions')"
+      :class="{'active': buttonActive('/expenses-transactions')}"
+    >
+      Расходы
+    </button>
   </div>
 </template>
 

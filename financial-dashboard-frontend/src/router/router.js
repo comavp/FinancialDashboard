@@ -3,6 +3,8 @@ import InvestTransactions from "@/pages/InvestTransactions";
 import Replenishments from "@/pages/Replenishments";
 import InvestmentsPortfolio from "@/pages/InvestmentsPortfolio";
 import { createRouter, createWebHistory } from "vue-router";
+import IncomeTransactions from "@/pages/IncomeTransactions.vue";
+import ExpensesTransactions from "@/pages/ExpensesTransactions.vue";
 
 const routes = [
   {
@@ -21,6 +23,14 @@ const routes = [
     path: "/investments-portfolio",
     component: InvestmentsPortfolio,
   },
+  {
+    path: "/income-transactions",
+    component: IncomeTransactions
+  },
+  {
+    path: "/expenses-transactions",
+    component: ExpensesTransactions
+  }
 ];
 
 const router = createRouter({
