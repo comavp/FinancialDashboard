@@ -280,13 +280,20 @@ public class ImportService {
         }
         return Stream.of(String.valueOf(currentCell.getCellFormula())
                         .replace("=", "")
-                        .split("[+*]"))
+                        .split("\\+"))
                 .map(currentValue -> {
                     if (currentValue.contains("-")) {
                         String[] arr = currentValue.split("-");
                         Double res = Double.parseDouble(arr[0]);
                         for (int i = 1; i < arr.length; i++) {
                             res -= Double.parseDouble(arr[i]);
+                        }
+                        currentValue = String.valueOf(res);
+                    } else if (currentValue.contains("*")) {
+                        String[] arr = currentValue.split("\\*");
+                        Double res = Double.parseDouble(arr[0]);
+                        for (int i = 1; i < arr.length; i++) {
+                            res *= Double.parseDouble(arr[i]);
                         }
                         currentValue = String.valueOf(res);
                     }
