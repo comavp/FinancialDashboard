@@ -1,17 +1,18 @@
 package ru.comavp.dashboard.service;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.stereotype.Service;
 import ru.comavp.dashboard.config.ImportProperties;
+import ru.comavp.dashboard.exceptions.CellMappingException;
 import ru.comavp.dashboard.model.entity.*;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -19,6 +20,7 @@ import static org.apache.poi.ss.usermodel.CellType.NUMERIC;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ImportService {
 
     private InvestTransactionsService investTransactionsService;
@@ -69,16 +71,16 @@ public class ImportService {
     public void importBudgetTransactions(Workbook workbook) {
         var currentSheet = workbook.getSheetAt(0);
         var columnIndexToColumnName = extractBudgetColumnNames(currentSheet);
-        var incomeStartColumn = findStartPosition(currentSheet, importProperties.getIncomeStartPosition(), 1);
-        var expensesStartColumn = findStartPosition(currentSheet, importProperties.getExpensesStartPosition(), 1);
+        var incomeColumnRange = findBudgetColumnRange(currentSheet, importProperties.getIncomeStartPosition());
+        var expensesColumnRange = findBudgetColumnRange(currentSheet, importProperties.getExpensesStartPosition());
 
         CompletableFuture.allOf(
-                extractIncomeTransactions(currentSheet, incomeStartColumn, columnIndexToColumnName)
+                extractIncomeTransactions(currentSheet, incomeColumnRange, columnIndexToColumnName)
                         .thenCompose(transactionsList -> {
                             incomeHistoryService.saveAll(transactionsList);
                             return CompletableFuture.completedFuture(null);
                         }),
-                extractExpensesTransactions(currentSheet, expensesStartColumn, columnIndexToColumnName)
+                extractExpensesTransactions(currentSheet, expensesColumnRange, columnIndexToColumnName)
                         .thenCompose(transactionsList -> {
                             expensesHistoryService.saveAll(transactionsList);
                             return CompletableFuture.completedFuture(null);
@@ -89,8 +91,8 @@ public class ImportService {
     public void importIncomeTransactions(Workbook workbook) {
         var currentSheet = workbook.getSheetAt(0);
         var columnIndexToColumnName = extractBudgetColumnNames(currentSheet);
-        var incomeStartColumn = findStartPosition(currentSheet, importProperties.getIncomeStartPosition(), 1);
-        extractIncomeTransactions(currentSheet, incomeStartColumn, columnIndexToColumnName)
+        var incomeColumnRange = findBudgetColumnRange(currentSheet, importProperties.getIncomeStartPosition());
+        extractIncomeTransactions(currentSheet, incomeColumnRange, columnIndexToColumnName)
                 .thenCompose(transactionsList -> {
                     incomeHistoryService.saveAll(transactionsList);
                     return CompletableFuture.completedFuture(null);
@@ -101,8 +103,8 @@ public class ImportService {
     public void importExpensesTransactions(Workbook workbook) {
         var currentSheet = workbook.getSheetAt(0);
         var columnIndexToColumnName = extractBudgetColumnNames(currentSheet);
-        var expensesStartColumn = findStartPosition(currentSheet, importProperties.getExpensesStartPosition(), 1);
-        extractExpensesTransactions(currentSheet, expensesStartColumn, columnIndexToColumnName)
+        var budgeColumnRange = findBudgetColumnRange(currentSheet, importProperties.getExpensesStartPosition());
+        extractExpensesTransactions(currentSheet, budgeColumnRange, columnIndexToColumnName)
                 .thenCompose(transactionsList -> {
                     expensesHistoryService.saveAll(transactionsList);
                     return CompletableFuture.completedFuture(null);
@@ -158,7 +160,23 @@ public class ImportService {
         return findStartPosition(currentSheet, startPosition, 0);
     }
 
-    private CompletableFuture<List<Income>> extractIncomeTransactions(Sheet currentSheet, int startPosition, Map<Integer, String> columnsIndexesToNames) {
+    private BudgetColumnRange findBudgetColumnRange(Sheet sheet, String startValue) {
+        int startPosition = findStartPosition(sheet, startValue);
+        CellRangeAddress cellRange = findCellRangeAddressByStartPosition(sheet, startPosition);
+        return new BudgetColumnRange(startPosition, cellRange.getLastColumn());
+    }
+
+    private CellRangeAddress findCellRangeAddressByStartPosition(Sheet sheet, int startPosition) {
+        for (var region: sheet.getMergedRegions()) {
+            if (region.isInRange(0, startPosition)) {
+                return region;
+            }
+        }
+        throw new RuntimeException("Region doesn't exist");
+    }
+
+    private CompletableFuture<List<Income>> extractIncomeTransactions(Sheet currentSheet, BudgetColumnRange budgetColumnRange,
+                                                                      Map<Integer, String> columnsIndexesToNames) {
         return CompletableFuture.supplyAsync(() -> {
             var rowIterator = currentSheet.rowIterator();
             int rowsToSkip = 2;
@@ -175,14 +193,16 @@ public class ImportService {
                 if (isEndOfIncomeTransactions(currentRow)) {
                     break;
                 }
-                resultList.addAll(extractIncomeTransactionsFromRow(currentRow, startPosition, columnsIndexesToNames));
+                resultList.addAll(extractIncomeTransactionsFromRow(currentRow, budgetColumnRange, columnsIndexesToNames));
             }
 
             return resultList;
         });
     }
 
-    private List<Income> extractIncomeTransactionsFromRow(Row currentRow, int startPosition, Map<Integer, String> columnsIndexesToNames) {
+    private List<Income> extractIncomeTransactionsFromRow(Row currentRow, BudgetColumnRange budgetColumnRange, Map<Integer, String> columnsIndexesToNames) {
+        int startPosition = budgetColumnRange.getStart();
+        int endPosition = budgetColumnRange.getLength();
         var cellIterator = currentRow.cellIterator();
         LocalDate currentDate = currentRow.getCell(0)
                 .getDateCellValue()
@@ -198,7 +218,7 @@ public class ImportService {
 
         var currentCell = cellIterator.next();
 
-        while (cellIterator.hasNext() && currentCell.getAddress().getColumn() < 2) {
+        while (cellIterator.hasNext() && currentCell.getAddress().getColumn() < endPosition) {
             currentCell = cellIterator.next();
             result.addAll(mapCellToIncomeTransaction(currentCell, columnsIndexesToNames, currentDate));
         }
@@ -214,14 +234,39 @@ public class ImportService {
             if (currentCell.getNumericCellValue() == 0) return new ArrayList<>();
             else return List.of(incomeBuilder.transactionValue(currentCell.getNumericCellValue()).build());
         }
-        return Stream.of(String.valueOf(currentCell.getCellFormula())
-                        .replace("=", "")
-                        .split("\\+"))
-                .map(currentValue -> incomeBuilder.transactionValue(Double.valueOf(currentValue)).build())
-                .toList();
+        try {
+            return Stream.of(String.valueOf(currentCell.getCellFormula())
+                            .replace("=", "")
+                            .split("\\+"))
+                    .map(currentValue -> {
+                        if (currentValue.contains("-")) {
+                            String[] arr = currentValue.split("-");
+                            Double res = Double.parseDouble(arr[0]);
+                            for (int i = 1; i < arr.length; i++) {
+                                res -= Double.parseDouble(arr[i]);
+                            }
+                            currentValue = String.valueOf(res);
+                        } else if (currentValue.contains("*")) {
+                            String[] arr = currentValue.split("\\*");
+                            Double res = Double.parseDouble(arr[0]);
+                            for (int i = 1; i < arr.length; i++) {
+                                res *= Double.parseDouble(arr[i]);
+                            }
+                            currentValue = String.valueOf(res);
+                        }
+                        return incomeBuilder.transactionValue(Double.valueOf(currentValue)).build();
+                    })
+                    .toList();
+        } catch (Exception e) {
+            String errorMessage = String.format("Error during parsing cell with rowNumber=%d and columnNumber=%d",
+                    currentCell.getRowIndex() + 1, currentCell.getColumnIndex() + 1);
+            log.error(errorMessage);
+            throw new CellMappingException(errorMessage, e);
+        }
     }
 
-    private CompletableFuture<List<Expenses>> extractExpensesTransactions(Sheet currentSheet, int startPosition, Map<Integer, String> columnsIndexesToNames) {
+    private CompletableFuture<List<Expenses>> extractExpensesTransactions(Sheet currentSheet, BudgetColumnRange budgetColumnRange,
+                                                                          Map<Integer, String> columnsIndexesToNames) {
         return CompletableFuture.supplyAsync(() -> {
             var rowIterator = currentSheet.rowIterator();
             int rowsToSkip = 2;
@@ -238,14 +283,17 @@ public class ImportService {
                 if (isEndOfExpensesTransactions(currentRow)) {
                     break;
                 }
-                resultList.addAll(extractExpensesTransactionsFromRow(currentRow, startPosition, columnsIndexesToNames));
+                resultList.addAll(extractExpensesTransactionsFromRow(currentRow, budgetColumnRange, columnsIndexesToNames));
             }
 
             return resultList;
         });
     }
 
-    private List<Expenses> extractExpensesTransactionsFromRow(Row currentRow, int startPosition, Map<Integer, String> columnsIndexesToNames) {
+    private List<Expenses> extractExpensesTransactionsFromRow(Row currentRow, BudgetColumnRange budgetColumnRange,
+                                                              Map<Integer, String> columnsIndexesToNames) {
+        int startPosition = budgetColumnRange.getStart();
+        int endPosition = budgetColumnRange.getLength();
         var cellIterator = currentRow.cellIterator();
         LocalDate currentDate = currentRow.getCell(0)
                 .getDateCellValue()
@@ -262,7 +310,7 @@ public class ImportService {
         var currentCell = cellIterator.next();
         result.addAll(mapCellToExpensesTransaction(currentCell, columnsIndexesToNames, currentDate));
 
-        while (cellIterator.hasNext() && currentCell.getAddress().getColumn() < 7) {
+        while (cellIterator.hasNext() && currentCell.getAddress().getColumn() < endPosition) {
             currentCell = cellIterator.next();
             result.addAll(mapCellToExpensesTransaction(currentCell, columnsIndexesToNames, currentDate));
         }
@@ -278,28 +326,35 @@ public class ImportService {
             if (currentCell.getNumericCellValue() == 0) return new ArrayList<>();
             else return List.of(expensesBuilder.transactionValue(currentCell.getNumericCellValue()).build());
         }
-        return Stream.of(String.valueOf(currentCell.getCellFormula())
-                        .replace("=", "")
-                        .split("\\+"))
-                .map(currentValue -> {
-                    if (currentValue.contains("-")) {
-                        String[] arr = currentValue.split("-");
-                        Double res = Double.parseDouble(arr[0]);
-                        for (int i = 1; i < arr.length; i++) {
-                            res -= Double.parseDouble(arr[i]);
+        try {
+            return Stream.of(String.valueOf(currentCell.getCellFormula())
+                            .replace("=", "")
+                            .split("\\+"))
+                    .map(currentValue -> {
+                        if (currentValue.contains("-")) {
+                            String[] arr = currentValue.split("-");
+                            Double res = Double.parseDouble(arr[0]);
+                            for (int i = 1; i < arr.length; i++) {
+                                res -= Double.parseDouble(arr[i]);
+                            }
+                            currentValue = String.valueOf(res);
+                        } else if (currentValue.contains("*")) {
+                            String[] arr = currentValue.split("\\*");
+                            Double res = Double.parseDouble(arr[0]);
+                            for (int i = 1; i < arr.length; i++) {
+                                res *= Double.parseDouble(arr[i]);
+                            }
+                            currentValue = String.valueOf(res);
                         }
-                        currentValue = String.valueOf(res);
-                    } else if (currentValue.contains("*")) {
-                        String[] arr = currentValue.split("\\*");
-                        Double res = Double.parseDouble(arr[0]);
-                        for (int i = 1; i < arr.length; i++) {
-                            res *= Double.parseDouble(arr[i]);
-                        }
-                        currentValue = String.valueOf(res);
-                    }
-                    return expensesBuilder.transactionValue(Double.valueOf(currentValue)).build();
-                })
-                .toList();
+                        return expensesBuilder.transactionValue(Double.valueOf(currentValue)).build();
+                    })
+                    .toList();
+        } catch (Exception e) {
+            String errorMessage = String.format("Error during parsing cell with rowNumber=%d and columnNumber=%d",
+                    currentCell.getRowIndex() + 1, currentCell.getColumnIndex() + 1);
+            log.error(errorMessage);
+            throw new CellMappingException(errorMessage, e);
+        }
     }
 
     private CompletableFuture<List<ReplenishmentTransaction>> extractReplenishmentTransactions(Sheet currentSheet, int startPosition) {
@@ -331,11 +386,11 @@ public class ImportService {
     }
 
     private boolean isEndOfIncomeTransactions(Row row) {
-        return row.getCell(0).getCellType().equals(CellType.BLANK);
+        return row.getFirstCellNum() != 0 || row.getCell(0).getCellType().equals(CellType.BLANK);
     }
 
     private boolean isEndOfExpensesTransactions(Row row) {
-        return row.getCell(0).getCellType().equals(CellType.BLANK);
+        return row.getFirstCellNum() != 0 || row.getCell(0).getCellType().equals(CellType.BLANK);
     }
 
     private boolean isEndOfInvestmentsTransactions(Row row) {
@@ -510,5 +565,12 @@ public class ImportService {
         entity.setIsin(cellsList.get(ind++).getStringCellValue());
         entity.setCategory(cellsList.get(ind).getStringCellValue());
         return entity;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class BudgetColumnRange {
+        private int start;
+        private int length;
     }
 }
