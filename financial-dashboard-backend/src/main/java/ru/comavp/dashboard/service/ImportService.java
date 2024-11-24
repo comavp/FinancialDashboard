@@ -139,11 +139,15 @@ public class ImportService {
         int ind = 1;
         var headersRow = sheet.getRow(1);
         var currentCel = headersRow.getCell(ind);
-        while (!"".equals(currentCel.getStringCellValue())) {
+        while (!"".equals(currentCel.getStringCellValue()) || isDeficitColumn(sheet, ind)) {
             result.put(currentCel.getColumnIndex(), currentCel.getStringCellValue());
-            currentCel = headersRow.getCell(ind++);
+            currentCel = headersRow.getCell(++ind);
         }
         return result;
+    }
+
+    private boolean isDeficitColumn(Sheet sheet, int cellInd) {
+        return "Недостача".equals(sheet.getRow(0).getCell(cellInd).getStringCellValue());
     }
 
     private int findStartPosition(Sheet currentSheet, String startPosition, int rowNumber) {
