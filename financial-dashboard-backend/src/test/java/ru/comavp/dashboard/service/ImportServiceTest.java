@@ -114,6 +114,22 @@ public class ImportServiceTest {
         assertParsedBudgetData(workbook, 5, 11, columnName -> expensesHistoryService.findSumByExpensesType(columnName));
     }
 
+    @Test
+    public void testImportIncomeTransactionsFor2021() throws IOException {
+        var workbook = readBudgetFileToImport("2021");
+        importService.importIncomeTransactions(workbook);
+        assertEquals(211, incomeHistoryService.getIncomeTransactionsNumber());
+        assertParsedBudgetData(workbook, 1, 4, columnName -> incomeHistoryService.findSumByIncomeType(columnName));
+    }
+
+    @Test
+    public void testImportExpensesTransactionsFor2021() throws IOException {
+        var workbook = readBudgetFileToImport("2021");
+        importService.importExpensesTransactions(workbook);
+        assertEquals(565, expensesHistoryService.getExpensesTransactionsNumber());
+        assertParsedBudgetData(workbook, 6, 12, columnName -> expensesHistoryService.findSumByExpensesType(columnName));
+    }
+
     private void assertParsedBudgetData(Workbook workbook, int startColumn, int endColumn, Function<String, Double> sumExtractor) {
         var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0), startColumn, endColumn);
 

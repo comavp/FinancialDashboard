@@ -8,10 +8,12 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.stereotype.Service;
 import ru.comavp.dashboard.config.ImportProperties;
 import ru.comavp.dashboard.exceptions.CellMappingException;
+import ru.comavp.dashboard.exceptions.RowMappingException;
 import ru.comavp.dashboard.model.entity.*;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -29,6 +31,8 @@ public class ImportService {
     private IncomeHistoryService incomeHistoryService;
     private ExpensesHistoryService expensesHistoryService;
     private ImportProperties importProperties;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public void importAllDataFromWorkBookSheet(Workbook workbook) {
         var historySheet = workbook.getSheet(importProperties.getHistorySheetName());
@@ -205,28 +209,44 @@ public class ImportService {
     }
 
     private List<Income> extractIncomeTransactionsFromRow(Row currentRow, BudgetColumnRange budgetColumnRange, Map<Integer, String> columnsIndexesToNames) {
-        int startPosition = budgetColumnRange.getStart();
-        int endPosition = budgetColumnRange.getEnd();
-        var cellIterator = currentRow.cellIterator();
-        LocalDate currentDate = currentRow.getCell(0)
-                .getDateCellValue()
-                .toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-        List<Income> result = new ArrayList<>();
+        try {
+            int startPosition = budgetColumnRange.getStart();
+            int endPosition = budgetColumnRange.getEnd();
+            var cellIterator = currentRow.cellIterator();
+            LocalDate currentDate = mapBudgetDateCell(currentRow.getCell(0));
+            List<Income> result = new ArrayList<>();
 
-        while(cellIterator.hasNext() && startPosition > 1) {
-            cellIterator.next();
-            startPosition--;
+            while (cellIterator.hasNext() && startPosition > 1) {
+                cellIterator.next();
+                startPosition--;
+            }
+
+            var currentCell = cellIterator.next();
+
+            while (cellIterator.hasNext() && currentCell.getAddress().getColumn() < endPosition) {
+                currentCell = cellIterator.next();
+                result.addAll(mapCellToIncomeTransaction(currentCell, columnsIndexesToNames, currentDate));
+            }
+
+            return result;
+        } catch (Exception e) {
+            String errorMessage = String.format("Error during parsing row with rowNumber=%d", currentRow.getRowNum() + 1);
+            log.error(errorMessage);
+            throw new RowMappingException(errorMessage, e);
         }
+    }
 
-        var currentCell = cellIterator.next();
-
-        while (cellIterator.hasNext() && currentCell.getAddress().getColumn() < endPosition) {
-            currentCell = cellIterator.next();
-            result.addAll(mapCellToIncomeTransaction(currentCell, columnsIndexesToNames, currentDate));
+    private LocalDate mapBudgetDateCell(Cell cell) {
+        LocalDate result;
+        switch (cell.getCellType()) {
+            case NUMERIC, FORMULA -> result = cell
+                    .getDateCellValue()
+                    .toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+            case STRING -> result = LocalDate.parse(cell.getStringCellValue(), DATE_FORMATTER);
+            default -> throw new RuntimeException("Cannot map date cell");
         }
-
         return result;
     }
 
@@ -296,30 +316,32 @@ public class ImportService {
 
     private List<Expenses> extractExpensesTransactionsFromRow(Row currentRow, BudgetColumnRange budgetColumnRange,
                                                               Map<Integer, String> columnsIndexesToNames) {
-        int startPosition = budgetColumnRange.getStart();
-        int endPosition = budgetColumnRange.getEnd();
-        var cellIterator = currentRow.cellIterator();
-        LocalDate currentDate = currentRow.getCell(0)
-                .getDateCellValue()
-                .toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-        List<Expenses> result = new ArrayList<>();
+        try {
+            int startPosition = budgetColumnRange.getStart();
+            int endPosition = budgetColumnRange.getEnd();
+            var cellIterator = currentRow.cellIterator();
+            LocalDate currentDate = mapBudgetDateCell(currentRow.getCell(0));
+            List<Expenses> result = new ArrayList<>();
 
-        while(cellIterator.hasNext() && startPosition > 0) {
-            cellIterator.next();
-            startPosition--;
-        }
+            while (cellIterator.hasNext() && startPosition > 0) {
+                cellIterator.next();
+                startPosition--;
+            }
 
-        var currentCell = cellIterator.next();
-        result.addAll(mapCellToExpensesTransaction(currentCell, columnsIndexesToNames, currentDate));
-
-        while (cellIterator.hasNext() && currentCell.getAddress().getColumn() < endPosition) {
-            currentCell = cellIterator.next();
+            var currentCell = cellIterator.next();
             result.addAll(mapCellToExpensesTransaction(currentCell, columnsIndexesToNames, currentDate));
-        }
 
-        return result;
+            while (cellIterator.hasNext() && currentCell.getAddress().getColumn() < endPosition) {
+                currentCell = cellIterator.next();
+                result.addAll(mapCellToExpensesTransaction(currentCell, columnsIndexesToNames, currentDate));
+            }
+
+            return result;
+        } catch (Exception e) {
+            String errorMessage = String.format("Error during parsing row with rowNumber=%d", currentRow.getRowNum() + 1);
+            log.error(errorMessage);
+            throw new RowMappingException(errorMessage, e);
+        }
     }
 
     private List<Expenses> mapCellToExpensesTransaction(Cell currentCell, Map<Integer, String> columnsIndexesToNames, LocalDate transactionDate) {
