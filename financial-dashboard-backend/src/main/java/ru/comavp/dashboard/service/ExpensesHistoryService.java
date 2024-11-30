@@ -23,4 +23,12 @@ public class ExpensesHistoryService {
     public Iterable<ExpensesDto> findAll() {
         return mapper.toDtoList(expensesHistoryRepository.findAll());
     }
+
+    public Double findSumByExpensesType(String expensesType) {
+        return expensesHistoryRepository.findTransactionsTypeByExpensesType(expensesType);
+    }
+
+    public Long getExpensesTransactionsNumber() {
+        return expensesHistoryRepository.count();
+    }
 }

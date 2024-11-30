@@ -23,4 +23,12 @@ public class IncomeHistoryService {
     public Iterable<IncomeDto> findAll() {
         return mapper.toDtoList(incomeHistoryRepository.findAll());
     }
+
+    public Double findSumByIncomeType(String incomeType) {
+        return incomeHistoryRepository.findTransactionsTypeByIncomeType(incomeType);
+    }
+
+    public Long getIncomeTransactionsNumber() {
+        return incomeHistoryRepository.count();
+    }
 }

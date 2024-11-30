@@ -206,7 +206,7 @@ public class ImportService {
 
     private List<Income> extractIncomeTransactionsFromRow(Row currentRow, BudgetColumnRange budgetColumnRange, Map<Integer, String> columnsIndexesToNames) {
         int startPosition = budgetColumnRange.getStart();
-        int endPosition = budgetColumnRange.getLength();
+        int endPosition = budgetColumnRange.getEnd();
         var cellIterator = currentRow.cellIterator();
         LocalDate currentDate = currentRow.getCell(0)
                 .getDateCellValue()
@@ -297,7 +297,7 @@ public class ImportService {
     private List<Expenses> extractExpensesTransactionsFromRow(Row currentRow, BudgetColumnRange budgetColumnRange,
                                                               Map<Integer, String> columnsIndexesToNames) {
         int startPosition = budgetColumnRange.getStart();
-        int endPosition = budgetColumnRange.getLength();
+        int endPosition = budgetColumnRange.getEnd();
         var cellIterator = currentRow.cellIterator();
         LocalDate currentDate = currentRow.getCell(0)
                 .getDateCellValue()
@@ -575,6 +575,6 @@ public class ImportService {
     @AllArgsConstructor
     public static class BudgetColumnRange {
         private int start;
-        private int length;
+        private int end;
     }
 }
