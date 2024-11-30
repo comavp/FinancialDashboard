@@ -11,6 +11,7 @@ import ru.comavp.dashboard.utils.DataUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -52,115 +53,76 @@ public class ImportServiceTest {
     @Test
     public void testImportIncomeTransactionsFor2017() throws IOException {
         var workbook = readBudgetFileToImport("2017");
-        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
         importService.importIncomeTransactions(workbook);
-
         assertEquals(112, incomeHistoryService.getIncomeTransactionsNumber());
-
-        assertTrue(Math.abs(expectedResultByType.get("Стипендия") - incomeHistoryService.findSumByIncomeType("Стипендия")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Разное") - incomeHistoryService.findSumByIncomeType("Разное")) < DataUtils.DIFF);
+        assertParsedBudgetData(workbook, 1, 2, columnName -> incomeHistoryService.findSumByIncomeType(columnName));
     }
 
     @Test
     public void testImportExpensesTransactionsFor2017() throws IOException {
         var workbook = readBudgetFileToImport("2017");
-        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
         importService.importExpensesTransactions(workbook);
-
         assertEquals(484, expensesHistoryService.getExpensesTransactionsNumber());
-
-        assertTrue(Math.abs(expectedResultByType.get("Еда") - expensesHistoryService.findSumByExpensesType("Еда")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Быт") - expensesHistoryService.findSumByExpensesType("Быт")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Здоровье") - expensesHistoryService.findSumByExpensesType("Здоровье")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Транспорт и связь") - expensesHistoryService.findSumByExpensesType("Транспорт и связь")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Разное (Расходы)") - expensesHistoryService.findSumByExpensesType("Разное")) < DataUtils.DIFF);
+        assertParsedBudgetData(workbook, 3, 7, columnName -> expensesHistoryService.findSumByExpensesType(columnName));
     }
 
     @Test
     public void testImportIncomeTransactionsFor2018() throws IOException {
         var workbook = readBudgetFileToImport("2018");
-        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
         importService.importIncomeTransactions(workbook);
-
         assertEquals(152, incomeHistoryService.getIncomeTransactionsNumber());
-
-        assertTrue(Math.abs(expectedResultByType.get("Стипендия") - incomeHistoryService.findSumByIncomeType("Стипендия")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Крипта") - incomeHistoryService.findSumByIncomeType("Крипта")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Разное") - incomeHistoryService.findSumByIncomeType("Разное")) < DataUtils.DIFF);
+        assertParsedBudgetData(workbook, 1, 3, columnName -> incomeHistoryService.findSumByIncomeType(columnName));
     }
 
     @Test
     public void testImportExpensesTransactionsFor2018() throws IOException {
         var workbook = readBudgetFileToImport("2018");
-        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
         importService.importExpensesTransactions(workbook);
-
         assertEquals(419, expensesHistoryService.getExpensesTransactionsNumber());
-
-        assertTrue(Math.abs(expectedResultByType.get("Еда") - expensesHistoryService.findSumByExpensesType("Еда")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Быт") - expensesHistoryService.findSumByExpensesType("Быт")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Здоровье") - expensesHistoryService.findSumByExpensesType("Здоровье")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Транспорт и связь") - expensesHistoryService.findSumByExpensesType("Транспорт и связь")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Разное (Расходы)") - expensesHistoryService.findSumByExpensesType("Разное")) < DataUtils.DIFF);
+        assertParsedBudgetData(workbook, 4, 8, columnName -> expensesHistoryService.findSumByExpensesType(columnName));
     }
 
     @Test
     public void testImportIncomeTransactionsFor2019() throws IOException {
         var workbook = readBudgetFileToImport("2019");
-        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
         importService.importIncomeTransactions(workbook);
-
         assertEquals(133, incomeHistoryService.getIncomeTransactionsNumber());
-
-        assertTrue(Math.abs(expectedResultByType.get("Стипендия") - incomeHistoryService.findSumByIncomeType("Стипендия")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Работа") - incomeHistoryService.findSumByIncomeType("Работа")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Разное") - incomeHistoryService.findSumByIncomeType("Разное")) < DataUtils.DIFF);
+        assertParsedBudgetData(workbook, 1, 3, columnName -> incomeHistoryService.findSumByIncomeType(columnName));
     }
 
     @Test
     public void testImportExpensesTransactionsFor2019() throws IOException {
         var workbook = readBudgetFileToImport("2019");
-        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
         importService.importExpensesTransactions(workbook);
-
         assertEquals(730, expensesHistoryService.getExpensesTransactionsNumber());
-
-        assertTrue(Math.abs(expectedResultByType.get("Еда") - expensesHistoryService.findSumByExpensesType("Еда")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Быт") - expensesHistoryService.findSumByExpensesType("Быт")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Здоровье") - expensesHistoryService.findSumByExpensesType("Здоровье")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Транспорт и связь") - expensesHistoryService.findSumByExpensesType("Транспорт и связь")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Разное (Расходы)") - expensesHistoryService.findSumByExpensesType("Разное")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Инвестиции") - expensesHistoryService.findSumByExpensesType("Инвестиции")) < DataUtils.DIFF);
+        assertParsedBudgetData(workbook, 5, 10, columnName -> expensesHistoryService.findSumByExpensesType(columnName));
     }
 
     @Test
     public void testImportIncomeTransactionsFor2020() throws IOException {
         var workbook = readBudgetFileToImport("2020");
-        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
         importService.importIncomeTransactions(workbook);
-
         assertEquals(172, incomeHistoryService.getIncomeTransactionsNumber());
-
-        assertTrue(Math.abs(expectedResultByType.get("Стипендия") - incomeHistoryService.findSumByIncomeType("Стипендия")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Работа") - incomeHistoryService.findSumByIncomeType("Работа")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Разное") - incomeHistoryService.findSumByIncomeType("Разное")) < DataUtils.DIFF);
+        assertParsedBudgetData(workbook, 1, 3, columnName -> incomeHistoryService.findSumByIncomeType(columnName));
     }
 
     @Test
     public void testImportExpensesTransactionsFor2020() throws IOException {
         var workbook = readBudgetFileToImport("2020");
-        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
         importService.importExpensesTransactions(workbook);
-
         assertEquals(270, expensesHistoryService.getExpensesTransactionsNumber());
+        assertParsedBudgetData(workbook, 5, 11, columnName -> expensesHistoryService.findSumByExpensesType(columnName));
+    }
 
-        assertTrue(Math.abs(expectedResultByType.get("Еда") - expensesHistoryService.findSumByExpensesType("Еда")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Быт") - expensesHistoryService.findSumByExpensesType("Быт")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Здоровье") - expensesHistoryService.findSumByExpensesType("Здоровье")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Транспорт и связь") - expensesHistoryService.findSumByExpensesType("Транспорт и связь")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Разное (Расходы)") - expensesHistoryService.findSumByExpensesType("Разное")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Крупные траты") - expensesHistoryService.findSumByExpensesType("Крупные траты")) < DataUtils.DIFF);
-        assertTrue(Math.abs(expectedResultByType.get("Инвестиции") - expensesHistoryService.findSumByExpensesType("Инвестиции")) < DataUtils.DIFF);
+    private void assertParsedBudgetData(Workbook workbook, int startColumn, int endColumn, Function<String, Double> sumExtractor) {
+        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0), startColumn, endColumn);
+
+        expectedResultByType.forEach((columnName, expectedValue) -> {
+            Double actualValue = sumExtractor.apply(columnName);
+            String errorMessage = String.format("Error during assertion of transactions sum with type '%s'. Expected sum: %f. Actual sum: %f",
+                    columnName, expectedValue, actualValue);
+            assertTrue(Math.abs(expectedValue - actualValue) < DataUtils.DIFF, errorMessage);
+        });
     }
 
     private Workbook readFileToImport() throws IOException {

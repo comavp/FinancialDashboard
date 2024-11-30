@@ -81,9 +81,8 @@ public class DataUtils {
                 .build();
     }
 
-    public Map<String, Double> buildColumnNamesToTransactionsSum(Sheet sheet) {
+    public Map<String, Double> buildColumnNamesToTransactionsSum(Sheet sheet, int startColumn, int endColumn) {
         int startRow = 1;
-        int startColumn = 1;
         String startColumnName = sheet.getRow(startRow).getCell(startColumn).getStringCellValue();
         Map<String, Double> columnNamesToTransactionsSum = new LinkedHashMap<>();
         Row row = null;
@@ -102,12 +101,10 @@ public class DataUtils {
         }
         for (var cellIt = row.cellIterator(); cellIt.hasNext(); ) {
             Cell columnNameCell = cellIt.next();
-            Cell valueCell = sheet.getRow(columnNameCell.getRowIndex() + 1).getCell(columnNameCell.getColumnIndex());
-            String columnName = columnNameCell.getStringCellValue();
-            if (columnNamesToTransactionsSum.containsKey(columnName)) {
-                columnName += " (Расходы)";
+            if (columnNameCell.getColumnIndex() >= startColumn && columnNameCell.getColumnIndex() <= endColumn) {
+                Cell valueCell = sheet.getRow(columnNameCell.getRowIndex() + 1).getCell(columnNameCell.getColumnIndex());
+                columnNamesToTransactionsSum.put(columnNameCell.getStringCellValue(), valueCell.getNumericCellValue());
             }
-            columnNamesToTransactionsSum.put(columnName, valueCell.getNumericCellValue());
         }
         return columnNamesToTransactionsSum;
     }
