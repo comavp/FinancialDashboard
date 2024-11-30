@@ -25,7 +25,7 @@ public class IncomeHistoryService {
     }
 
     public Double findSumByIncomeType(String incomeType) {
-        return incomeHistoryRepository.findTransactionsTypeByIncomeType(incomeType);
+        return incomeHistoryRepository.findTransactionsTypeByIncomeType(incomeType).orElse(0.0);
     }
 
     public Long getIncomeTransactionsNumber() {

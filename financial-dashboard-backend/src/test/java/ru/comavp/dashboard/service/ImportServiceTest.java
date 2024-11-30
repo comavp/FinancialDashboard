@@ -50,6 +50,90 @@ public class ImportServiceTest {
     }
 
     @Test
+    public void testImportIncomeTransactionsFor2017() throws IOException {
+        var workbook = readBudgetFileToImport("2017");
+        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
+        importService.importIncomeTransactions(workbook);
+
+        assertEquals(112, incomeHistoryService.getIncomeTransactionsNumber());
+
+        assertTrue(Math.abs(expectedResultByType.get("Стипендия") - incomeHistoryService.findSumByIncomeType("Стипендия")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Разное") - incomeHistoryService.findSumByIncomeType("Разное")) < DataUtils.DIFF);
+    }
+
+    @Test
+    public void testImportExpensesTransactionsFor2017() throws IOException {
+        var workbook = readBudgetFileToImport("2017");
+        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
+        importService.importExpensesTransactions(workbook);
+
+        assertEquals(484, expensesHistoryService.getExpensesTransactionsNumber());
+
+        assertTrue(Math.abs(expectedResultByType.get("Еда") - expensesHistoryService.findSumByExpensesType("Еда")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Быт") - expensesHistoryService.findSumByExpensesType("Быт")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Здоровье") - expensesHistoryService.findSumByExpensesType("Здоровье")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Транспорт и связь") - expensesHistoryService.findSumByExpensesType("Транспорт и связь")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Разное (Расходы)") - expensesHistoryService.findSumByExpensesType("Разное")) < DataUtils.DIFF);
+    }
+
+    @Test
+    public void testImportIncomeTransactionsFor2018() throws IOException {
+        var workbook = readBudgetFileToImport("2018");
+        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
+        importService.importIncomeTransactions(workbook);
+
+        assertEquals(152, incomeHistoryService.getIncomeTransactionsNumber());
+
+        assertTrue(Math.abs(expectedResultByType.get("Стипендия") - incomeHistoryService.findSumByIncomeType("Стипендия")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Крипта") - incomeHistoryService.findSumByIncomeType("Крипта")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Разное") - incomeHistoryService.findSumByIncomeType("Разное")) < DataUtils.DIFF);
+    }
+
+    @Test
+    public void testImportExpensesTransactionsFor2018() throws IOException {
+        var workbook = readBudgetFileToImport("2018");
+        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
+        importService.importExpensesTransactions(workbook);
+
+        assertEquals(419, expensesHistoryService.getExpensesTransactionsNumber());
+
+        assertTrue(Math.abs(expectedResultByType.get("Еда") - expensesHistoryService.findSumByExpensesType("Еда")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Быт") - expensesHistoryService.findSumByExpensesType("Быт")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Здоровье") - expensesHistoryService.findSumByExpensesType("Здоровье")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Транспорт и связь") - expensesHistoryService.findSumByExpensesType("Транспорт и связь")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Разное (Расходы)") - expensesHistoryService.findSumByExpensesType("Разное")) < DataUtils.DIFF);
+    }
+
+    @Test
+    public void testImportIncomeTransactionsFor2019() throws IOException {
+        var workbook = readBudgetFileToImport("2019");
+        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
+        importService.importIncomeTransactions(workbook);
+
+        assertEquals(133, incomeHistoryService.getIncomeTransactionsNumber());
+
+        assertTrue(Math.abs(expectedResultByType.get("Стипендия") - incomeHistoryService.findSumByIncomeType("Стипендия")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Работа") - incomeHistoryService.findSumByIncomeType("Работа")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Разное") - incomeHistoryService.findSumByIncomeType("Разное")) < DataUtils.DIFF);
+    }
+
+    @Test
+    public void testImportExpensesTransactionsFor2019() throws IOException {
+        var workbook = readBudgetFileToImport("2019");
+        var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));
+        importService.importExpensesTransactions(workbook);
+
+        assertEquals(730, expensesHistoryService.getExpensesTransactionsNumber());
+
+        assertTrue(Math.abs(expectedResultByType.get("Еда") - expensesHistoryService.findSumByExpensesType("Еда")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Быт") - expensesHistoryService.findSumByExpensesType("Быт")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Здоровье") - expensesHistoryService.findSumByExpensesType("Здоровье")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Транспорт и связь") - expensesHistoryService.findSumByExpensesType("Транспорт и связь")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Разное (Расходы)") - expensesHistoryService.findSumByExpensesType("Разное")) < DataUtils.DIFF);
+        assertTrue(Math.abs(expectedResultByType.get("Инвестиции") - expensesHistoryService.findSumByExpensesType("Инвестиции")) < DataUtils.DIFF);
+    }
+
+    @Test
     public void testImportIncomeTransactionsFor2020() throws IOException {
         var workbook = readBudgetFileToImport("2020");
         var expectedResultByType = DataUtils.buildColumnNamesToTransactionsSum(workbook.getSheetAt(0));

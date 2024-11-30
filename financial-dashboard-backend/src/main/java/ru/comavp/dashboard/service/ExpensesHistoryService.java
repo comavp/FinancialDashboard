@@ -25,7 +25,7 @@ public class ExpensesHistoryService {
     }
 
     public Double findSumByExpensesType(String expensesType) {
-        return expensesHistoryRepository.findTransactionsTypeByExpensesType(expensesType);
+        return expensesHistoryRepository.findTransactionsTypeByExpensesType(expensesType).orElse(0.0);
     }
 
     public Long getExpensesTransactionsNumber() {

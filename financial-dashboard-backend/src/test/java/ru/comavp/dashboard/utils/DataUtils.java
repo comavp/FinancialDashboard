@@ -89,10 +89,15 @@ public class DataUtils {
         Row row = null;
         for (var rowIt = sheet.rowIterator(); rowIt.hasNext();) {
             Row currentRow = rowIt.next();
-            Cell currentCell = currentRow.getCell(1);
-            if (currentCell.getCellType().equals(STRING) && startColumnName.equals(currentCell.getStringCellValue()) && currentCell.getRowIndex() != startRow) {
-                row = currentRow;
-                break;
+            Cell currentCell = currentRow.getCell(startColumn);
+            try {
+                if (checkEqualsStartColumn(currentCell, startColumnName, startRow)) {
+                    row = currentRow;
+                    break;
+                }
+            } catch (RuntimeException e) {
+                String message = String.format("Error during parsing cell with rowInd=%d, colInd=%d", currentRow.getRowNum(), startColumn);
+                throw new RuntimeException(message, e);
             }
         }
         for (var cellIt = row.cellIterator(); cellIt.hasNext(); ) {
@@ -105,5 +110,12 @@ public class DataUtils {
             columnNamesToTransactionsSum.put(columnName, valueCell.getNumericCellValue());
         }
         return columnNamesToTransactionsSum;
+    }
+
+    private boolean checkEqualsStartColumn(Cell currentCell, String startColumnName, int startRow) {
+        return currentCell != null &&
+                currentCell.getCellType().equals(STRING) &&
+                startColumnName.equals(currentCell.getStringCellValue()) &&
+                currentCell.getRowIndex() != startRow;
     }
 }
