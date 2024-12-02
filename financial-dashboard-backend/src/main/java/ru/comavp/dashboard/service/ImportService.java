@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
+import static org.apache.poi.ss.usermodel.CellType.BLANK;
 import static org.apache.poi.ss.usermodel.CellType.NUMERIC;
 
 @Service
@@ -257,6 +258,8 @@ public class ImportService {
         if (currentCell.getCellType().equals(NUMERIC)) {
             if (currentCell.getNumericCellValue() == 0) return new ArrayList<>();
             else return List.of(incomeBuilder.transactionValue(currentCell.getNumericCellValue()).build());
+        } else if (currentCell.getCellType().equals(BLANK)) {
+            return new ArrayList<>();
         }
         try {
             return Stream.of(String.valueOf(currentCell.getCellFormula())
@@ -351,6 +354,8 @@ public class ImportService {
         if (currentCell.getCellType().equals(NUMERIC)) {
             if (currentCell.getNumericCellValue() == 0) return new ArrayList<>();
             else return List.of(expensesBuilder.transactionValue(currentCell.getNumericCellValue()).build());
+        } else if (currentCell.getCellType().equals(BLANK)) {
+            return new ArrayList<>();
         }
         try {
             return Stream.of(String.valueOf(currentCell.getCellFormula())
