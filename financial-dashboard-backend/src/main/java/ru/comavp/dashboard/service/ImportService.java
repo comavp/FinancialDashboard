@@ -331,12 +331,15 @@ public class ImportService {
                 startPosition--;
             }
 
-            var currentCell = cellIterator.next();
-            result.addAll(mapCellToExpensesTransaction(currentCell, columnsIndexesToNames, currentDate));
+            if (!cellIterator.hasNext()) {
+                return result;
+            }
 
-            while (cellIterator.hasNext() && currentCell.getAddress().getColumn() < endPosition) {
-                currentCell = cellIterator.next();
+            var currentCell = cellIterator.next();
+
+            while (cellIterator.hasNext() && currentCell.getAddress().getColumn() <= endPosition) {
                 result.addAll(mapCellToExpensesTransaction(currentCell, columnsIndexesToNames, currentDate));
+                currentCell = cellIterator.next();
             }
 
             return result;
