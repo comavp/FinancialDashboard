@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="CREATE_RECEIPT_TABLE" author="comavp">
+        <createTable tableName="receipt">
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+            <column name="modified_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="original_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="receipt_creation_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+            <column name="total_sum" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="retail_place" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="request_id" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="type" type="VARCHAR(10)" defaultValue="RECEIPT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="receipt"
+                baseColumnNames="request_id"
+                constraintName="fk_receipt_request"
+                referencedTableName="request"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="receipt" constraintName="fk_receipt_request"/>
+            <dropTable tableName="receipt"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

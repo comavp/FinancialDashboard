@@ -7,6 +7,12 @@
 
     <changeSet id="CREATE_ITEM_TABLE" author="comavp">
         <createTable tableName="item">
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+            <column name="modified_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -22,7 +28,7 @@
             <column name="quantity" type="BIGINT">
                 <constraints nullable="true"/>
             </column>
-            <column name="receipt_id" type="VARCHAR(255)">
+            <column name="receipt_id" type="BIGINT">
                 <constraints nullable="true"/>
             </column>
         </createTable>

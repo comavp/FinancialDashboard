@@ -5,16 +5,19 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-    <changeSet id="CREATE_RECEIPT_TABLE" author="comavp">
-        <createTable tableName="receipt">
-            <column name="id" type="VARCHAR(255)">
+    <changeSet id="CREATE_REQUEST_TABLE" author="comavp">
+        <createTable tableName="request">
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+            <column name="modified_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="created_at" type="TIMESTAMP">
-                <constraints nullable="true"/>
-            </column>
-            <column name="total_sum" type="BIGINT">
-                <constraints nullable="true"/>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
             </column>
             <column name="data" type="JSONB">
                 <constraints nullable="true"/>
@@ -25,7 +28,7 @@
         </createTable>
 
         <rollback>
-            <dropTable tableName="receipt"/>
+            <dropTable tableName="request"/>
         </rollback>
     </changeSet>
 

@@ -5,7 +5,8 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-    <include file="liquibase/db/changelog/changesets/001-create-receipt-table.xml"/>
-    <include file="liquibase/db/changelog/changesets/002-create-item-table.xml"/>
+    <include file="liquibase/db/changelog/changesets/001-create-request-table.xml"/>
+    <include file="liquibase/db/changelog/changesets/002-create-receipt-table.xml"/>
+    <include file="liquibase/db/changelog/changesets/003-create-item-table.xml"/>
 
 </databaseChangeLog>

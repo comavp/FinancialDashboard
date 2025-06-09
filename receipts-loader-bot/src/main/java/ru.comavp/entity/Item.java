@@ -1,26 +1,24 @@
 package ru.comavp.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Item {
+@AllArgsConstructor
+@Builder
+public class Item extends AbstractEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String category;
     private Double price;
     private Long quantity;
+
     @ManyToOne
-    private Receipt receiptId;
+    private Receipt receipt;
 }

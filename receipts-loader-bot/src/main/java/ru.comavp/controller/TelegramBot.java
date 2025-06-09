@@ -1,6 +1,5 @@
 package ru.comavp.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.comavp.BotProperties;
+import ru.comavp.service.ReceiptLoaderService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +29,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private BotProperties botProperties;
     @Autowired
-    private ObjectMapper objectMapper;
+    private ReceiptLoaderService receiptLoaderService;
 
     @PostConstruct
     public void init() throws TelegramApiException {
@@ -58,6 +58,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             System.out.println("File received: " + userDocument.getFileName());
             String data = downloadReceipt(userMessage.getDocument(), chatId);
             System.out.println(data);
+            receiptLoaderService.saveFileDate(data);
             sendMessage(chatId, "Файл обработан");
         } else if (userMessage.hasText()) {
             System.out.println("Message received: " + update.getMessage().getText());

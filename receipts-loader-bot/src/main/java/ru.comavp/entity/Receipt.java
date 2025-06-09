@@ -1,11 +1,7 @@
 package ru.comavp.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,18 +10,22 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Receipt {
+@AllArgsConstructor
+@Builder
+public class Receipt extends AbstractEntity {
 
     @Id
-    private String id;
-    private LocalDateTime createdAt;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String originalId;
+    private LocalDateTime receiptCreationDate;
     private Long totalSum;
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
-    private String data;
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
-    private String metadata;
-    @OneToMany(mappedBy = "receiptId")
+    private String retailPlace;
+    private String type;
+
+    @OneToMany(mappedBy = "receipt")
     private List<Item> items;
+
+    @ManyToOne
+    private Request request;
 }
